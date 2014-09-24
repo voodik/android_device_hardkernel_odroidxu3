@@ -1,0 +1,249 @@
+import init.odroidxu3.usb.rc
+import init.odroidxu3.wifi.rc
+
+on init
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mkdir /storage/emulated 0555 root root
+    mkdir /storage/sdcard0/.android_secure 0775 system system
+
+    mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
+    mkdir /storage/sdcard0 0700 root root
+
+    mkdir /mnt/media_rw/sdcard1 0700 media_rw media_rw
+    mkdir /storage/sdcard1 0700 root root
+
+    mkdir /mnt/media_rw/usb2host 0700 media_rw media_rw
+    mkdir /storage/usb2host 0700 root root
+
+    mkdir /mnt/media_rw/usb3device 0700 media_rw media_rw
+    mkdir /storage/usb3device 0700 root root
+
+    mkdir /mnt/media_rw/usb3host 0700 media_rw media_rw
+    mkdir /storage/usb3host 0700 root root
+
+    symlink /storage/sdcard0/.android_secure /sdcard/.android_secure
+    symlink /storage/sdcard0/.android_secure /mnt/sdcard/.android_secure
+
+    export EXTERNAL_STORAGE /storage/sdcard0
+    export SECONDARY_STORAGE /storage/sdcard1:/storage/usb2host:/storage/usb3device:/storage/usb3host
+
+    # for backwards compatibilit
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
+    symlink /storage/sdcard1 /extSdCard
+    symlink /storage/sdcard1 /mnt/extSdCard
+    symlink /storage/sdcard1 /external_sd
+    symlink /storage/usb2host /usb2host
+    symlink /storage/usb2host /mnt/usb2host
+    symlink /storage/usb3device /usb3device
+    symlink /storage/usb3device /mnt/usb3device
+    symlink /storage/usb3host /usb3host
+    symlink /storage/usb3host /mnt/usb3host
+
+
+     mkdir /efs 0771 radio system
+#    symlink /dev/block/mmcblk0p13 /dev/mbin0
+#    restorecon /dev/mbin0
+
+#    symlink /dev/block/mmcblk0p8 /dev/block/param
+
+#test
+    chmod 0755 /sbin/healthd
+
+on fs
+    mount_all /fstab.odroidxu3
+    setprop ro.crypto.fuse_sdcard true
+    chmod 4755 /system/bin/pppd
+
+on post-fs
+    # Increase max readahead size to 256 KB
+    write /sys/block/mmcblk0/queue/read_ahead_kb 256
+    # for controlling write performance boosting
+    chown system radio /sys/block/mmcblk0/bkops_en
+    chmod 0664 /sys/block/mmcblk0/bkops_en
+
+on post-fs-data
+    mkdir /data/media 0770 media_rw media_rw
+
+    mkdir /data/misc/radio 0775 radio system
+    mkdir /efs/imei 0775 radio system
+
+# create data/gps for GPS daemon
+    mkdir /data/system/gps 771 gps system
+
+# restore permissions for gps
+    mkdir /data/system 0775 system system
+
+# Broadcom NFC
+    mkdir /data/bcmnfc 0700 nfc nfc
+    mkdir /data/bcmnfc/param 0700 nfc nfc
+
+    # DivX DRM
+    mkdir /efs/.files 0775
+    mkdir /efs/.files/.dx1 0775 media system
+    mkdir /efs/.files/.dm33 0775 media system
+    mkdir /efs/.files/.mp301 0775 media system
+
+# SEAndroid Restore context for efs files
+    restorecon_recursive /efs
+
+#-----------------------------------------------------------------------
+
+on boot
+    mount debugfs /sys/kernel/debug /sys/kernel/debug
+
+    # Reduce reserved lowmem from ~48MB to ~12MB
+    write /proc/sys/vm/lowmem_reserve_ratio "128 128"
+
+    # Set up kernel tracing, but disable it by default
+    chmod 0222 /sys/kernel/debug/tracing/trace_marker
+    write /sys/kernel/debug/tracing/tracing_on 0
+
+    setprop ro.build.product odroidxu3
+    setprop ro.product.device odroidxu3
+
+    # 4.3 needs this
+    chmod 0644 /proc/cmdline
+
+# Permissions for bluetooth
+    setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
+    chown bluetooth bluetooth ro.bt.bdaddr_path
+    chmod 0660 /sys/class/rfkill/rfkill0/state
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
+
+
+# Permissions for backlight
+    chmod 0660 /sys/class/backlight/pwm-backlight.0/brightness
+    chown system system /sys/class/backlight/pwm-backlight.0/brightness
+
+# Permissions for Gscaler log level
+    chmod 0644 /sys/module/gsc/parameters/gsc_dbg
+
+
+# Service begin here
+
+# Set watchdog timer to 30 seconds and pet it every 10 seconds to get a 20 second margin
+service watchdogd /sbin/watchdogd 10 20
+    class core
+
+
+# virtual sdcard daemon running as media_rw (1023)
+#service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated
+#    class late_start
+
+service fuse_sdcard0 /system/bin/sdcard -u 1023 -g 1023 /mnt/media_rw/sdcard0 /storage/sdcard0
+    class late_start
+    disabled
+
+service fuse_sdcard1 /system/bin/sdcard -u 1023 -g 1023 /mnt/media_rw/sdcard1 /storage/sdcard1
+    class late_start
+    disabled
+
+service fuse_usb2host /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usb2host /storage/usb2host
+    class late_start
+    disabled
+
+service fuse_usb3device /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usb3device /storage/usb3device
+    class late_start
+    disabled
+
+service fuse_usb3host /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usb3host /storage/usb3host
+    class late_start
+    disabled
+
+service insmod_ax88179 /system/bin/insmod /system/lib/modules/ax88179_178a.ko
+    class core
+    user root
+    group root
+    oneshot
+                
+service insmod_smsc95xx /system/bin/insmod /system/lib/modules/smsc95xx.ko    
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
+service insmod_usbmidi /system/bin/insmod /system/lib/modules/snd-usbmidi-lib.ko
+    class core
+    user root
+    group root
+    oneshot
+
+service insmod_usb_audio /system/bin/insmod /system/lib/modules/snd-usb-audio.ko
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
+service insmod_pl2303 /system/bin/insmod /system/lib/modules/pl2303.ko
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
+service insmod_ftdi /system/bin/insmod /system/lib/modules/ftdi_sio.ko
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
+service gps_cfg /system/bin/sh /system/etc/init.gps.sh
+    class main
+    user root
+    disabled
+    oneshot
+
+on property:init.svc.insmod_ax88179=stopped
+    start insmod_smsc95xx
+
+on property:init.svc.insmod_usbmidi=stopped
+    start insmod_usb_audio
+
+
+service dhcpcd_bt-pan /system/bin/dhcpcd -ABKL
+    disabled
+    oneshot
+
+service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
+	class main
+	disabled
+	oneshot
+
+service dhcpcd_eth1 /system/bin/dhcpcd -ABKL
+        class main
+        disabled
+        oneshot
+
+service iprenew_bt-pan /system/bin/dhcpcd -n
+    disabled
+    oneshot
+
+service iprenew_eth0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service iprenew_eth1 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+on property:init.svc.bootanim=stopped
+     start insmod_pl2303
+
+
+on property:init.svc.insmod_pl2303=stopped
+     start insmod_ftdi
+
+on property:init.svc.insmod_ftdi=stopped
+     #set usb gps speed
+     start gps_cfg
+
+on property:ro.dumpstate.dmesg=1
+    write /proc/sys/kernel/dmesg_restrict 0
+

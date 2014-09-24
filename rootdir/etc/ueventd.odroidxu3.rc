@@ -1,0 +1,91 @@
+/dev/mali0                0666   system     system
+/dev/ion                  0666   system     system
+/dev/ump                  0666   system     graphics
+/dev/exynos-mem           0660   system     graphics
+/dev/video6               0660   media      media
+/dev/video7               0660   media      media
+/dev/video8               0660   media      media
+/dev/video9               0660   media      media
+/dev/video0               0660   system     camera
+/dev/video1               0660   system     camera
+/dev/video2               0660   system     camera
+/dev/video3               0660   system     camera
+/dev/video11              0660   system     system
+/dev/video12              0660   system     system
+/dev/video20              0660   system     system
+/dev/fimg2d               0666   system     graphics
+/dev/i2c-2                0660   system     system
+/dev/CEC                  0660   system     system
+/dev/HPD                  0660   system     system
+
+# ULP Audio
+/dev/srp                  0660   system     audio
+/dev/srp_ctrl             0660   system     audio
+
+# gscalers
+/dev/video23              0660   media      graphics
+/dev/video26              0660   media      graphics
+
+/dev/video24              0660   media      graphics
+/dev/video27              0660   media      graphics
+
+# mscalers
+/dev/video50              0660   media      graphics
+/dev/video51              0660   media      graphics
+/dev/video52              0660   media      graphics
+
+# jpeg
+/dev/video12              0660   media      media
+
+# camera
+/dev/video100             0660   media      media
+/dev/video101             0660   media      media
+/dev/video102             0660   media      media
+/dev/video103             0660   media      media
+/dev/video110             0660   media      media
+/dev/video111             0660   media      media
+/dev/video112             0660   media      media
+/dev/video114             0660   media      media
+/dev/video115             0660   media      media
+/dev/video116             0660   media      media
+/dev/video130             0660   media      media
+/dev/video134             0660   media      media
+/dev/video137             0660   media      media
+/dev/video140             0660   media      media
+/dev/video141             0660   media      media
+/dev/video146             0660   media      media
+/dev/video149             0660   media      media
+/dev/media2               0660   media      media
+
+/dev/v4l-subdev*          0660   system     camera
+/dev/media0               0660   system     camera
+/dev/media1               0660   system     camera
+
+# mixer
+/dev/video16              0660   system     audio
+/dev/video17              0660   system     system
+/dev/video18              0660   system     system
+/dev/video19              0660   system     system
+
+# scalers
+/dev/video50              0660   media      graphics
+/dev/video51              0660   media      graphics
+/dev/video52              0660   media      graphics
+
+# MobiCore
+/dev/mobicore             0600   drmrpc     drmrpc
+/dev/mobicore-user        0660   drm        drmrpc
+
+# Secure MEM driver
+/dev/s5p-smem             0660   drm        drmrpc
+
+# USB 3g Dongle
+/dev/ttyUSB*              0660   radio      radio
+# USB Acessory
+/dev/usb/lp*              0660   system     usb
+
+# for bluetooth nodes
+/dev/uhid                 0660    bluetooth bluetooth
+ 
+# bluetooth device
+/dev/bus/usb/001/006      0660    bluetooth bluetooth

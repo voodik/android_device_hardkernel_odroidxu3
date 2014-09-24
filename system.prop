@@ -1,0 +1,10 @@
+#
+# system.prop for odroidxu3
+#
+
+ro.arch=exynos5422
+ro.sf.lcd_density=160
+persist.hdmi.color_range=1
+ro.adb.secure=0
+ro.secure=0
+
