@@ -185,7 +185,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # System properties
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.opengles.version=131072 \
+    ro.opengles.version=196608 \
     ro.adb.secure=0 \
     ro.secure=0 \
     persist.sys.root_access=3 \
