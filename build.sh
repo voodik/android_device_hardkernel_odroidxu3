@@ -105,7 +105,7 @@ function make_update_zip()
 
     echo '$PRODUCT_BOARD'
 
-	cp $KERN_DIR/zImage $TMP_OUT_DIR/update/
+	cp $KERN_DIR/zImage-dtb $TMP_OUT_DIR/update/
 	cp $TMP_OUT_DIR/system.img $TMP_OUT_DIR/update/
 	cp $OUT_DIR/userdata.img $TMP_OUT_DIR/update/
 	cp $OUT_DIR/cache.img $TMP_OUT_DIR/update/
@@ -142,6 +142,10 @@ case "$BUILD_OPTION" in
         copy_root_2_system
 		make_update_zip
 		;;
+        update)
+        copy_root_2_system
+	make_update_zip
+                ;;
 	*)
         build_android
         copy_root_2_system
