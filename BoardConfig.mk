@@ -138,12 +138,14 @@ ifeq ($(BOARD_WLAN_DEVICE), rtl819xxu)
     BOARD_HOSTAPD_DRIVER        := NL80211
     BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_rtl
 
-    WIFI_DRIVER_MODULE_NAME		        := "rtl8191su"
-    WIFI_DRIVER_MODULE_PATH             := "/system/lib/modules/rtl8191su.ko"
+    WIFI_DRIVER_MODULE_NAME	:= "rtl8191su"
+    WIFI_DRIVER_MODULE_PATH	:= "/system/lib/modules/rtl8191su.ko"
 
-    WIFI_DRIVER_MODULE_NAME2	        := "rtl8192cu"
-    WIFI_DRIVER_MODULE_PATH2             := "/system/lib/modules/rtl8192cu.ko"
-    
+    WIFI_DRIVER_MODULE_NAME2	:= "rtl8192cu"
+    WIFI_DRIVER_MODULE_PATH2	:= "/system/lib/modules/rtl8192cu.ko"
+
+    WIFI_DRIVER_MODULE_NAME3	:= "rt2800usb"
+    WIFI_DRIVER_MODULE_PATH3	:= "/system/lib/modules/rt2800usb.ko"
 
     # Realtek driver has FW embedded inside, and will automatically load FW
     # at NIC initialization process. So there is no need to set these 

@@ -165,6 +165,27 @@ service insmod_smsc95xx /system/bin/insmod /system/lib/modules/smsc95xx.ko
     disabled
     oneshot
 
+service insmod_ralink1 /system/bin/insmod /system/lib/modules/rt2x00lib.ko
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
+service insmod_ralink2 /system/bin/insmod /system/lib/modules/rt2x00usb.ko
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
+service insmod_ralink3 /system/bin/insmod /system/lib/modules/rt2800lib.ko
+    class core
+    user root
+    group root
+    disabled
+    oneshot
+
 service insmod_usbmidi /system/bin/insmod /system/lib/modules/snd-usbmidi-lib.ko
     class core
     user root
@@ -200,6 +221,15 @@ service gps_cfg /system/bin/sh /system/etc/init.gps.sh
 
 on property:init.svc.insmod_ax88179=stopped
     start insmod_smsc95xx
+
+on property:ro.hardkernel.wifi2=true
+    start insmod_ralink1
+
+on property:init.svc.insmod_ralink1=stopped
+    start insmod_ralink2
+
+on property:init.svc.insmod_ralink2=stopped
+    start insmod_ralink3
 
 on property:init.svc.insmod_usbmidi=stopped
     start insmod_usb_audio

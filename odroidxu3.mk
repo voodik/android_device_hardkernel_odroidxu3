@@ -152,6 +152,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/usb3g/lib/gps.default.so:system/lib/hw/gps.default.so \
     $(LOCAL_PATH)/configs/init.gps.sh:system/etc/init.gps.sh
 
+#RT5370 module firmware
+PRODUCT_COPY_FILES += \
+$(LOCAL_PATH)/configs/rt2870.bin:system/etc/firmware/rt2870.bin
+
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.kernel.android.gps=ttyUSB3 \
     ro.kernel.android.gps.speed=4800
