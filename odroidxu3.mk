@@ -158,7 +158,8 @@ $(LOCAL_PATH)/configs/rt2870.bin:system/etc/firmware/rt2870.bin
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.kernel.android.gps=ttyUSB3 \
-    ro.kernel.android.gps.speed=4800
+    ro.kernel.android.gps.speed=4800 \
+    ro.hardkernel.wifi2=false
 
 #Hardkernel
 PRODUCT_PACKAGES += \
@@ -179,7 +180,7 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    persist.sys.usb.config=mass_storage \
+    persist.sys.usb.config=mtp \
     ro.kernel.android.checkjni=0 
 
 # Enable repeatable keys in CWM
