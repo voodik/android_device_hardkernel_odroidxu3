@@ -2,7 +2,10 @@ import init.odroidxu3.usb.rc
 import init.odroidxu3.wifi.rc
 
 on init
+    mkdir /persist 0771 system system
     mkdir /mnt/shell/emulated 0700 shell shell
+    mkdir /mnt/shell/container 0700 system system
+    mkdir /storage 0550 system sdcard_r
     mkdir /storage/emulated 0555 root root
     mkdir /storage/sdcard0/.android_secure 0775 system system
 
@@ -21,8 +24,8 @@ on init
     mkdir /mnt/media_rw/usb3host 0700 media_rw media_rw
     mkdir /storage/usb3host 0700 root root
 
-    symlink /storage/sdcard0/.android_secure /sdcard/.android_secure
-    symlink /storage/sdcard0/.android_secure /mnt/sdcard/.android_secure
+#    symlink /storage/sdcard0/.android_secure /sdcard/.android_secure
+#    symlink /storage/sdcard0/.android_secure /mnt/sdcard/.android_secure
 
     export EXTERNAL_STORAGE /storage/sdcard0
     export SECONDARY_STORAGE /storage/sdcard1:/storage/usb2host:/storage/usb3device:/storage/usb3host
@@ -52,7 +55,7 @@ on init
 
 on fs
     mount_all /fstab.odroidxu3
-    setprop ro.crypto.fuse_sdcard true
+#    setprop ro.crypto.fuse_sdcard true
     chmod 4755 /system/bin/pppd
 
 on post-fs
@@ -73,19 +76,6 @@ on post-fs-data
 
 # restore permissions for gps
     mkdir /data/system 0775 system system
-
-# Broadcom NFC
-    mkdir /data/bcmnfc 0700 nfc nfc
-    mkdir /data/bcmnfc/param 0700 nfc nfc
-
-    # DivX DRM
-    mkdir /efs/.files 0775
-    mkdir /efs/.files/.dx1 0775 media system
-    mkdir /efs/.files/.dm33 0775 media system
-    mkdir /efs/.files/.mp301 0775 media system
-
-# SEAndroid Restore context for efs files
-    restorecon_recursive /efs
 
 #-----------------------------------------------------------------------
 
@@ -108,10 +98,6 @@ on boot
 # Permissions for bluetooth
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
     chown bluetooth bluetooth ro.bt.bdaddr_path
-    chmod 0660 /sys/class/rfkill/rfkill0/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
-
 
 # Permissions for backlight
     chmod 0660 /sys/class/backlight/pwm-backlight.0/brightness
@@ -184,12 +170,6 @@ service insmod_ralink3 /system/bin/insmod /system/lib/modules/rt2800lib.ko
     user root
     group root
     disabled
-    oneshot
-
-service uvc_usb_module /system/bin/insmod /system/lib/modules/uvcvideo.ko
-    class core
-    user root
-    group root
     oneshot
 
 service insmod_vb2vmalc /system/bin/insmod /system/lib/modules/videobuf2-vmalloc.ko

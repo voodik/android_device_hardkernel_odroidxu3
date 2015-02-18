@@ -95,6 +95,7 @@ NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
 
 #HWC
 BOARD_USES_HWC_SERVICES := true
+TARGET_SAMSUNG_GRALLOC_EXTERNAL_USECASES := true
 
 #HDMI
 BOARD_USES_GSC_VIDEO := true
@@ -188,7 +189,7 @@ BOARD_SEPOLICY_UNION := \
     gpsd.te \
     mediaserver.te \
     surfaceflinger.te \
-    system.te
+    system_server.te
 
 # Charging mode
 #BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charging
