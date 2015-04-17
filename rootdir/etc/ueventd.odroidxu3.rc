@@ -88,4 +88,4 @@
 /dev/uhid                 0660    bluetooth bluetooth
  
 # bluetooth device
-/dev/bus/usb/001/006      0660    bluetooth bluetooth
+#/dev/bus/usb/001/006      0660    bluetooth bluetooth
