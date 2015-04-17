@@ -5,6 +5,7 @@
 ro.arch=exynos5422
 ro.sf.lcd_density=160
 persist.hdmi.color_range=1
+persist.sys.isUsbOtgEnabled=true
 ro.adb.secure=0
 ro.secure=0
 
