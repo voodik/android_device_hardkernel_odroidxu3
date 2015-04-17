@@ -1,0 +1,12 @@
+type insmod, domain;
+type insmod_exec, exec_type, file_type;
+# Started by init
+init_daemon_domain(insmod)
+
+allow insmod self:capability sys_module;
+allow insmod system_file:file entrypoint;
+allow insmod system_data_file:file open;
+allow insmod self:capability dac_override;
+allow insmod system_data_file:dir { write add_name };
+allow insmod system_data_file:file { write create };
+

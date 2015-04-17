@@ -1,0 +1,3 @@
+#============= adbd ==============
+allow adbd system_file:file entrypoint;
+

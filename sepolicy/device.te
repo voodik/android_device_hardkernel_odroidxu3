@@ -1,1 +1,4 @@
 type secmem_device, dev_type;
+
+# Real Time Clock
+type rtc, dev_type;

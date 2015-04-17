@@ -1,0 +1,7 @@
+#============= platform_app ==============
+allow platform_app su_exec:file { read execute open execute_no_trans };
+allow platform_app sudaemon:unix_stream_socket connectto;
+allow platform_app superuser_device:sock_file write;
+allow platform_app kernel:system module_request;
+allow platform_app sysfs_devices_system_cpu:file write;
+

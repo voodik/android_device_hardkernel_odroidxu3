@@ -1,0 +1,2 @@
+#============= zygote ==============
+allow zygote system_file:dir mounton;

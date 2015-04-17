@@ -53,6 +53,10 @@ BOARD_USES_GENERIC_AUDIO := false
 BOARD_USES_I2S_AUDIO := true
 BOARD_USES_PCM_AUDIO := false
 BOARD_USES_SPDIF_AUDIO := false
+
+# Bionic
+TARGET_USE_QCOM_BIONIC_OPTIMIZATION := true
+
 #
 # Bluetooth
 #
@@ -91,7 +95,7 @@ USE_OPENGL_RENDERER := true
 BOARD_EGL_CFG := $(LOCAL_PATH)/configs/egl.cfg
 
 BOARD_USE_BGRA_8888 := true
-NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 5
 
 #HWC
 BOARD_USES_HWC_SERVICES := true
@@ -139,11 +143,14 @@ ifeq ($(BOARD_WLAN_DEVICE), rtl819xxu)
     BOARD_HOSTAPD_DRIVER        := NL80211
     BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_rtl
 
-    WIFI_DRIVER_MODULE_NAME	:= "rtl8191su"
-    WIFI_DRIVER_MODULE_PATH	:= "/system/lib/modules/rtl8191su.ko"
+#    WIFI_DRIVER_MODULE_NAME	:= "rtl8191su"
+#    WIFI_DRIVER_MODULE_PATH	:= "/system/lib/modules/rtl8191su.ko"
 
-    WIFI_DRIVER_MODULE_NAME2	:= "rtl8192cu"
-    WIFI_DRIVER_MODULE_PATH2	:= "/system/lib/modules/rtl8192cu.ko"
+    WIFI_DRIVER_MODULE_NAME     := "8192cu"
+    WIFI_DRIVER_MODULE_PATH     := "/system/lib/modules/8192cu.ko"
+
+    WIFI_DRIVER_MODULE_NAME2	:= "8192cu"
+    WIFI_DRIVER_MODULE_PATH2	:= "/system/lib/modules/8192cu.ko"
 
     WIFI_DRIVER_MODULE_NAME3	:= "rt2800usb"
     WIFI_DRIVER_MODULE_PATH3	:= "/system/lib/modules/rt2800usb.ko"
@@ -182,14 +189,30 @@ BOARD_RECOVERY_SWIPE := true
 BOARD_SEPOLICY_DIRS += \
     device/hardkernel/odroidxu3/sepolicy
 
-BOARD_SEPOLICY_UNION := \
+BOARD_SEPOLICY_UNION += \
     file_contexts \
+    adbd.te \
+    bluetooth.te \
     device.te \
     domain.te \
     gpsd.te \
+    healthd.te \
+    init.te \
+    insmod.te \
+    kernel.te \
     mediaserver.te \
+    netd.te \
+    rild.te \
+    platform_app.te \
+    sdcard.te \
+    service_contexts \
+    servicemanager.te \
     surfaceflinger.te \
-    system_server.te
+    system_app.te \
+    system_server.te \
+    ueventd.te \
+    vold.te \
+    zygote.te
 
 # Charging mode
 #BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charging

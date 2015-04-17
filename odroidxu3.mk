@@ -49,6 +49,7 @@ PRODUCT_PACKAGES += \
 	audio.primary.odroidxu3 \
 	audio.a2dp.default \
 	audio.usb.default \
+	audio.r_submix.default \
 	tinyplay \
 	tinymix \
 	tinycap
@@ -59,10 +60,6 @@ PRODUCT_PACKAGES += \
         wpa_supplicant.conf \
         dhcpcd.conf \
         wpa_supplicant
-
-# Camera
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/init.exynos.cam.sh:system/etc/init.exynos.cam.sh
 
 PRODUCT_PACKAGES += \
     camera.odroidxu3 \
@@ -97,8 +94,8 @@ PRODUCT_COPY_FILES += \
 #    keystore.exynos5
 
 # Lights
-PRODUCT_PACKAGES += \
-    lights.odroidxu3
+#PRODUCT_PACKAGES += \
+#    lights.odroidxu3
 
 # Media profile
 PRODUCT_COPY_FILES += \
@@ -135,7 +132,8 @@ PRODUCT_PACKAGES += \
 # Radio
 PRODUCT_PACKAGES += \
 	rild \
-	chat
+	chat \
+	mngblt
 
 #USB 3g support
 PRODUCT_COPY_FILES += \
@@ -170,7 +168,8 @@ $(LOCAL_PATH)/configs/rt2870.bin:system/etc/firmware/rt2870.bin
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.kernel.android.gps=ttyUSB3 \
     ro.kernel.android.gps.speed=4800 \
-    ro.hardkernel.wifi2=false
+    wlan.modname=8192cu \
+    ro.voodik.iccid=8991101200003204510
 
 #Hardkernel
 PRODUCT_PACKAGES += \
@@ -184,8 +183,7 @@ PRODUCT_PACKAGES += \
 
 ADDITIONAL_DEFAULT_PROPERTIES += \
     ro.adb.secure=0 \
-    ro.secure=0 \
-    persist.sys.root_access=3
+    ro.secure=0
 
 
 
@@ -204,7 +202,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608 \
     ro.adb.secure=0 \
     ro.secure=0 \
-    persist.sys.root_access=3 \
     mouse.right.click=back \
     ro.rfkilldisabled=1 \
     wifi.interface=wlan0

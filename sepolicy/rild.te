@@ -1,0 +1,6 @@
+#============= rild ==============
+allow rild ppp_device:chr_file { read write ioctl open getattr };
+allow rild ppp_exec:file { read getattr open execute execute_no_trans };
+allow rild self:capability { setgid dac_override };
+allow rild system_prop:property_service set;
+

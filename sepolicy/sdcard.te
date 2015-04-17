@@ -1,0 +1,2 @@
+#============= sdcardd ==============
+allow sdcardd system_file:dir mounton;

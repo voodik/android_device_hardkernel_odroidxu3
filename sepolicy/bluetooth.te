@@ -1,0 +1,4 @@
+#============= bluetooth ==============
+allow bluetooth usb_device:chr_file open;
+allow bluetooth usb_device:dir { read open };
+
