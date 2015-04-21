@@ -212,6 +212,7 @@ BOARD_SEPOLICY_UNION += \
     system_server.te \
     ueventd.te \
     vold.te \
+    voodik.te \
     zygote.te
 
 # Charging mode

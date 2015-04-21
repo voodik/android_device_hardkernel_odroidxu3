@@ -38,6 +38,7 @@
 /efs/bluetooth(/.*)?    u:object_r:bluetooth_data_file:s0
 
 /system/bin/mcDriverDaemon  --  u:object_r:tee_exec:s0
+/system/bin/mngblt		u:object_r:voodik_exec:s0
 #/system/bin/insmod		u:object_r:insmod_exec:s0
 
 #/system/acct			u:object_r:rootfs:s0

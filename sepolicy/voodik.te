@@ -1,0 +1,9 @@
+type voodik, domain;
+type voodik_exec, exec_type, file_type;
+# Started by init
+init_daemon_domain(voodik)
+
+#============= voodik ==============
+allow voodik self:capability chown;
+allow voodik usb_device:chr_file setattr;
+
