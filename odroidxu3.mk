@@ -85,9 +85,9 @@ PRODUCT_PACKAGES += \
 
 # Keylayouts
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/idc/odroid-ts.idc:system/usr/idc/odroidxu3-ts.idc \
-    $(LOCAL_PATH)/keylayout/odroid-ts.kl:system/usr/keylayout/odroidxu3-ts.kl \
-    $(LOCAL_PATH)/keylayout/odroid-keypad.kl:system/usr/keylayout/odroidxu3-keypad.kl
+    $(LOCAL_PATH)/idc/odroid-ts.idc:system/usr/idc/odroid-ts.idc \
+    $(LOCAL_PATH)/keylayout/odroid-ts.kl:system/usr/keylayout/odroid-ts.kl \
+    $(LOCAL_PATH)/keylayout/odroid-keypad.kl:system/usr/keylayout/odroid-keypad.kl
 
 # Keystore
 #PRODUCT_PACKAGES += \
