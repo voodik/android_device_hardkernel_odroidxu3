@@ -50,13 +50,10 @@ on init
 
 #    symlink /dev/block/mmcblk0p8 /dev/block/param
 
-#test
-    chmod 0755 /sbin/healthd
 
 on fs
     mount_all /fstab.odroidxu3
 #    setprop ro.crypto.fuse_sdcard true
-    chmod 4755 /system/bin/pppd
 
 on post-fs
     # Increase max readahead size to 256 KB
