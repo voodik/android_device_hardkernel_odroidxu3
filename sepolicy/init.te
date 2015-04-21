@@ -1,8 +1,5 @@
 #============= init ==============
 allow init self:capability sys_module;
-allow init system_file:dir { setattr mounton };
-allow init ppp_exec:file setattr;
-allow init system_file:dir { write create add_name };
-allow init system_file:file setattr;
+allow init system_file:dir { setattr mounton write create add_name remove_name };
+allow init system_file:file { setattr write rename create unlink link };
 allow init system_file:lnk_file create;
-
