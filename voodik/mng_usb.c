@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define LOG_TAG "MNG_BLT"
+#define LOG_TAG "VooDiK_BLT"
 #include "cutils/log.h"
 #include <fcntl.h>
 #include <dirent.h>
@@ -42,10 +42,10 @@ int main() {
 				read(pid_fd, busnum, 1);
 				read(pid_fd1, devnum, 1);
 				sprintf(device, "/dev/bus/usb/00%s/00%s", busnum, devnum);
-			     ALOGE("MNG Bluetooth device is %s", device);
+			     ALOGE("Bluetooth device is %s", device);
 				 int err = chown( device, user, group );
 				 if (err == -1){
-				 ALOGE("MNG Cannot chown device %s", device);
+				 ALOGE("Cannot chown device %s", device);
 				 }
 
 			     close(pid_fd);
