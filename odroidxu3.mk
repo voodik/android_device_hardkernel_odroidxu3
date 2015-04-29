@@ -138,7 +138,6 @@ PRODUCT_PACKAGES += \
 #USB 3g support
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/etc/apns-conf.xml:system/etc/apns-conf.xml \
-    vendor/cm/prebuilt/common/etc/spn-conf.xml:system/etc/spn-conf.xml \
     $(LOCAL_PATH)/usb3g/etc/ppp/ip-down:system/etc/ppp/ip-down \
     $(LOCAL_PATH)/usb3g/etc/ppp/ip-up:system/etc/ppp/ip-up \
     $(LOCAL_PATH)/usb3g/etc/ppp/call-pppd:system/etc/ppp/call-pppd \
