@@ -22,5 +22,6 @@
     <bool name="def_lockscreen_disabled">true</bool>
     <integer name="def_screen_off_timeout">604800000</integer>
     <bool name="def_install_non_market_apps">true</bool>
+    <integer name="def_battery_style">4</integer>
 
 </resources>
