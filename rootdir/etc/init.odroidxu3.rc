@@ -243,6 +243,14 @@ service insmod_ftdi /system/bin/insmod /system/lib/modules/ftdi_sio.ko
     disabled
     oneshot
 
+service insmod_cp210x /system/bin/insmod /system/lib/modules/cp210x.ko
+    class core
+    seclabel u:r:insmod:s0
+    user root
+    group root
+    disabled
+    oneshot
+
 service gps_cfg /system/bin/sh /system/etc/init.gps.sh
     class main
     user root
@@ -309,11 +317,13 @@ service iprenew_eth1 /system/bin/dhcpcd -n
 on property:init.svc.bootanim=stopped
      start insmod_pl2303
 
-
 on property:init.svc.insmod_pl2303=stopped
      start insmod_ftdi
 
 on property:init.svc.insmod_ftdi=stopped
+     start insmod_cp210x
+
+on property:init.svc.insmod_cp210x=stopped
      #set usb gps speed
      start gps_cfg
 
