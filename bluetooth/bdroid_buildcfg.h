@@ -29,4 +29,7 @@
 #define SMP_INCLUDED TRUE
 #define PAN_NAP_DISABLED TRUE
 
+/* Enable A2DP sink */
+#define BTA_AV_SINK_INCLUDED TRUE
+
 #endif
