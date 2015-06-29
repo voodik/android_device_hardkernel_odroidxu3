@@ -148,6 +148,14 @@ service insmod_ax88179 /system/bin/insmod /system/lib/modules/ax88179_178a.ko
     user root
     group root
     oneshot
+
+service insmod_r8152 /system/bin/insmod /system/lib/modules/r8152.ko
+    class core
+    seclabel u:r:insmod:s0
+    user root
+    group root
+    disabled
+    oneshot
                 
 service insmod_smsc95xx /system/bin/insmod /system/lib/modules/smsc95xx.ko    
     class core
@@ -270,6 +278,9 @@ on property:ro.debug_level=0x4f4c
 	start watchdogd
 
 on property:init.svc.insmod_ax88179=stopped
+    start insmod_r8152
+
+on property:init.svc.insmod_r8152=stopped
     start insmod_smsc95xx
 
 on property:wlan.modname=rt2800usb
