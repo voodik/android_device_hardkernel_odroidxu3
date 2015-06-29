@@ -3,6 +3,7 @@
 /dev/ttySAC0            u:object_r:hci_attach_dev:s0
 /dev/ttySAC1            u:object_r:gps_device:s0
 
+/dev/ttyACM[0-4]*       u:object_r:gps_device:s0
 /dev/ttyUSB[0-4]*       u:object_r:ppp_device:s0
 
 /dev/s5p-smem           u:object_r:secmem_device:s0
