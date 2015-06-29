@@ -172,7 +172,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.kernel.android.gps=ttyACM0 \
     ro.kernel.android.gps.speed=9600 \
     wlan.modname=8192cu \
-    ro.voodik.iccid=8991101200003204510 \
     persist.service.bt.a2dp.sink=true
 
 #Hardkernel
