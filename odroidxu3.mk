@@ -152,8 +152,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/usb3g/etc/usb_modeswitch.d/$(file):system/etc/usb_modeswitch.d/$(file))
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    rild.libpath=/system/lib/libril-rk29-dataonly.so \
-    ril.function.dataonly=1
+    ril.function.dataonly=1 \
+    ro.radio.noril=1 \
+    config.disable_bluetooth=true
 
 #USB GPS support
 PRODUCT_COPY_FILES += \

@@ -277,6 +277,9 @@ service gps_cfg /system/bin/sh /system/etc/init.gps.sh
 on property:ro.debug_level=0x4f4c
 	start watchdogd
 
+on property:ro.radio.noril=0
+    setprop rild.libpath "/system/lib/libril-rk29-dataonly.so"
+
 on property:init.svc.insmod_ax88179=stopped
     start insmod_r8152
 
