@@ -227,6 +227,14 @@ service insmod_usb_audio /system/bin/insmod /system/lib/modules/snd-usb-audio.ko
     disabled
     oneshot
 
+service insmod_cdc_acm /system/bin/insmod /system/lib/modules/cdc-acm.ko
+    class core
+    seclabel u:r:insmod:s0
+    user root
+    group root
+    disabled
+    oneshot
+
 service insmod_pl2303 /system/bin/insmod /system/lib/modules/pl2303.ko
     class core
     seclabel u:r:insmod:s0
@@ -315,6 +323,7 @@ service iprenew_eth1 /system/bin/dhcpcd -n
     oneshot
 
 on property:init.svc.bootanim=stopped
+     start insmod_cdc_acm
      start insmod_pl2303
 
 on property:init.svc.insmod_pl2303=stopped
@@ -323,9 +332,9 @@ on property:init.svc.insmod_pl2303=stopped
 on property:init.svc.insmod_ftdi=stopped
      start insmod_cp210x
 
-on property:init.svc.insmod_cp210x=stopped
+#on property:init.svc.insmod_cp210x=stopped
      #set usb gps speed
-     start gps_cfg
+#    start gps_cfg
 
 on property:ro.dumpstate.dmesg=1
     write /proc/sys/kernel/dmesg_restrict 0
