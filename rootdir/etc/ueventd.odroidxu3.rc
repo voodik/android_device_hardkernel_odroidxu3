@@ -6,16 +6,16 @@
 /dev/video7               0660   media      media
 /dev/video8               0660   media      media
 /dev/video9               0660   media      media
-/dev/video0               0660   system     camera
-/dev/video1               0660   system     camera
-/dev/video2               0660   system     camera
-/dev/video3               0660   system     camera
+/dev/video0               0666   system     camera
+/dev/video1               0666   system     camera
+/dev/video2               0666   system     camera
+/dev/video3               0666   system     camera
 /dev/video11              0660   system     system
 /dev/video12              0660   system     system
 /dev/video20              0660   system     system
 /dev/fimg2d               0666   system     graphics
 /dev/i2c-2                0660   system     system
-/dev/CEC                  0660   system     system
+/dev/CEC                  0666   system     system
 /dev/HPD                  0660   system     system
 
 # ULP Audio
@@ -80,7 +80,9 @@
 /dev/s5p-smem             0660   drm        drmrpc
 
 # USB 3g Dongle
-/dev/ttyUSB*              0660   radio      radio
+/dev/ttyUSB*              0666   radio      radio
+/dev/ttyACM*              0666   radio      radio
+
 # USB Acessory
 /dev/usb/lp*              0660   system     usb
 
