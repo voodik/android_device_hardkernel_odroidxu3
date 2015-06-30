@@ -81,7 +81,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     gralloc.exynos5 \
     hwcomposer.exynos5 \
-    libion
+    libion \
+    libcec
 
 # Keylayouts
 PRODUCT_COPY_FILES += \
