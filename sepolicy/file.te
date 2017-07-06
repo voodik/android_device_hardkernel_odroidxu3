@@ -1,0 +1,4 @@
+type iso9660, sdcard_type, fs_type, mlstrustedobject;
+type sysfs_odroid, fs_type, sysfs_type;
+
+#type persist_file, file_type;

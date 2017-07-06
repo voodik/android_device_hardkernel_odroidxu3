@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2013 The Android-x86 Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,49 @@
 #ifndef _BDROID_BUILDCFG_H
 #define _BDROID_BUILDCFG_H
 
-#define BTM_DEF_LOCAL_NAME "Odroid-XU3"
-// At present either USB or UART is supported
-#define BLUETOOTH_HCI_USE_USB          TRUE
+#define BTM_DEF_LOCAL_NAME "ODROID-XU3-7"
+
 // Bluetooth Low Power Mode is supported on BT4.0
-#define HCILP_INCLUDED                 FALSE
+//#define HCILP_INCLUDED                 FALSE
 
-// 12.0 Updates
-#define BLE_INCLUDED TRUE
-#define BTA_GATT_INCLUDED TRUE
-#define SMP_INCLUDED TRUE
-#define PAN_NAP_DISABLED TRUE
+// Turn off BLE_PRIVACY_SPT.  Remote reconnect fails on
+// often if this is enabled.
+#define BLE_PRIVACY_SPT FALSE
 
-/* Enable A2DP sink */
-#define BTA_AV_SINK_INCLUDED TRUE
+// Force connection interval to 13.75ms
+#define BTM_BLE_CONN_INT_MIN_DEF 11 /* 13.75ms = 11 * 1.25 */
+#define BTM_BLE_CONN_INT_MAX_DEF BTM_BLE_CONN_INT_MIN_DEF
+
+// Detect disconnects faster
+#define BTM_BLE_CONN_TIMEOUT_DEF 300
+
+// Increase background scanning to reduce reconnect time
+#define BTM_BLE_SCAN_SLOW_INT_1    110    /* 68.75 ms   = 110 *0.625 */
+#define BTM_BLE_SCAN_SLOW_WIN_1    8      /* 5 ms = 8 *0.625 */
+
+/* We will support a remote +  4 game controllers.  To be able to
+ * allocate sufficient bandwidth for all devices we will restrict the
+ * Game Controllers to a sniff interval of 13.75ms.
+ */
+#define BTA_DM_PM_SNIFF4_MAX     22
+#define BTA_DM_PM_SNIFF4_MIN     22
+#define BTA_DM_PM_SNIFF4_ATTEMPT 1
+#define BTA_DM_PM_SNIFF4_TIMEOUT 0
+
+#define BTA_DM_PM_SNIFF_HH_OPEN_IDX BTA_DM_PM_SNIFF4
+#define BTA_DM_PM_HH_OPEN_DELAY 0
+
+#define BTA_DM_PM_SNIFF_HH_ACTIVE_IDX BTA_DM_PM_SNIFF4
+#define BTA_DM_PM_HH_ACTIVE_DELAY 0
+
+#define BTA_DM_PM_SNIFF_HH_IDLE_IDX BTA_DM_PM_SNIFF4
+#define BTA_DM_PM_HH_IDLE_DELAY 0
+
+/* Handsfree device */
+#define BTA_DM_COD {0x20, 0x04, 0x08}
+
+#define BTM_WBS_INCLUDED TRUE
+#define BTIF_HF_WBS_PREFERRED TRUE
+
 
 #endif

@@ -1,0 +1,4 @@
+#============= toolbox ==============
+allow toolbox self:capability sys_module;
+allow toolbox system_data_file:file open;
+

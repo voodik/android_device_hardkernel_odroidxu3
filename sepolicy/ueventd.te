@@ -1,2 +1,2 @@
 #============= ueventd ==============
-allow ueventd system_file:file entrypoint;
+#allow ueventd system_file:file entrypoint;

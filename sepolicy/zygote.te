@@ -1,2 +1,4 @@
 #============= zygote ==============
-allow zygote system_file:dir mounton;
+#allow zygote debugfs:file { open write };
+#allow zygote system_file:dir mounton;
+

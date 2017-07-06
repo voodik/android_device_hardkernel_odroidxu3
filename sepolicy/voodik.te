@@ -7,3 +7,11 @@ init_daemon_domain(voodik)
 allow voodik self:capability chown;
 allow voodik usb_device:chr_file setattr;
 
+#============= voodik ==============
+allow voodik sysfs:dir { open read };
+allow voodik sysfs:file { open read };
+
+#============= voodik ==============
+allow voodik root_block_device:blk_file { getattr open read };
+
+set_prop(voodik, odroid_prop)

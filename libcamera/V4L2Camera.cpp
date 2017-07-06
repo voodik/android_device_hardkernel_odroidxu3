@@ -8,6 +8,7 @@
 
 #define LOG_TAG "V4L2Camera"
 #include <utils/Log.h>
+#include <cutils/properties.h>
 
 extern "C" {
 #include <stdio.h>
@@ -54,6 +55,7 @@ V4L2Camera::~V4L2Camera()
 int V4L2Camera::Open (const char *device)
 {
     int ret;
+    char norm[PROPERTY_VALUE_MAX];
 
     /* Close the previous instance, if any */
     Close();
@@ -80,6 +82,25 @@ int V4L2Camera::Open (const char *device)
         ALOGE("Capture device does not support streaming i/o");
         return -1;
     }
+
+        memset(norm, 0, sizeof(norm));
+        memset(&videoIn->nnorm,0,sizeof(videoIn->nnorm));
+        property_get("voodik.camera.norm", norm, "0");
+
+	if (!strcmp("pal", norm)){
+	videoIn->nnorm = V4L2_STD_PAL;
+	} else if (!strcmp("ntsc", norm)){
+	videoIn->nnorm = V4L2_STD_NTSC;
+	} else {
+	videoIn->nnorm = V4L2_STD_UNKNOWN;
+	}
+
+	if (videoIn->nnorm != V4L2_STD_UNKNOWN){
+		ret = ioctl(fd, VIDIOC_S_STD, &videoIn->nnorm);
+		if (ret < 0) {
+		ALOGE("Open: VIDIOC_S_STD Failed: %s", strerror(errno));
+		}
+	}
 
     /* Enumerate all available frame formats */
     EnumFrameFormats();

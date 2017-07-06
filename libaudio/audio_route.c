@@ -22,6 +22,7 @@
 #include <expat.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <cutils/log.h>
 
@@ -328,7 +329,7 @@ static void start_tag(void *data, const XML_Char *tag_name,
     state->level++;
 }
 
-static void end_tag(void *data, const XML_Char *tag_name)
+static void end_tag(void *data, const XML_Char *tag_name __attribute__ ((__unused__)))
 {
     struct config_parse_state *state = data;
 

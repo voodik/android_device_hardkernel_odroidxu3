@@ -37,6 +37,7 @@ struct vdIn {
     int outFrameSize;                       // The expected output framesize (in YUYV)
     int capBytesPerPixel;                   // Capture bytes per pixel
     int capCropOffset;                      // The offset in bytes to add to the captured buffer to get to the first pixel
+    v4l2_std_id nnorm;
 
 };
 

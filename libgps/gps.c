@@ -653,6 +653,7 @@ nmea_reader_parse( NmeaReader*  r )
         nmea_reader_update_svs( r, svs_inview, msg_number, 2, tok_sv3_prn_num, tok_sv3_elevation, tok_sv3_azimuth, tok_sv3_snr );
         nmea_reader_update_svs( r, svs_inview, msg_number, 3, tok_sv4_prn_num, tok_sv4_elevation, tok_sv4_azimuth, tok_sv4_snr );
         r->sv_status.num_svs=svs_inview;
+		r->sv_status.size = sizeof(r->sv_status);
 
         if (num_messages==msg_number)
             update_gps_svstatus(&r->sv_status);

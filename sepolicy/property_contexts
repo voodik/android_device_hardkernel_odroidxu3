@@ -1,0 +1,7 @@
+ro.voodik.odroid-ts u:object_r:odroid_prop:s0
+odroid. u:object_r:odroid_prop:s0
+persist.disable_bluetooth u:object_r:odroid_prop:s0
+persist.pwbtn.shutdown u:object_r:odroid_prop:s0
+persist.hdmi.audioforce u:object_r:odroid_prop:s0
+persist.hdmi.switch_tv_input u:object_r:odroid_prop:s0
+persist.adb.tcp.port u:object_r:odroid_prop:s0

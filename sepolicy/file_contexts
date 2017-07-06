@@ -3,9 +3,18 @@
 /dev/ttySAC0            u:object_r:hci_attach_dev:s0
 /dev/ttySAC1            u:object_r:gps_device:s0
 
+# Serial console
+/dev/ttySAC2            u:object_r:console_device:s0
+
+/dev/block/mmcblk0      u:object_r:root_block_device:s0
+/dev/block/mmcblk0p2    u:object_r:system_block_device:s0
+/dev/block/mmcblk0p3    u:object_r:cache_block_device:s0
+/dev/block/mmcblk0p4    u:object_r:userdata_block_device:s0
+
 /dev/ttyACM[0-4]*       u:object_r:gps_device:s0
 /dev/ttyUSB[0-4]*       u:object_r:ppp_device:s0
 
+/dev/CEC                u:object_r:hdmi_cec_device:s0
 /dev/s5p-smem           u:object_r:secmem_device:s0
 
 /dev/mobicore           u:object_r:tee_device:s0
@@ -36,15 +45,19 @@
 
 /dev/rtc0                          u:object_r:rtc:s0
 
+/sys/devices/odroid_fan.14(/.*)?   u:object_r:sysfs_odroid:s0
+/sys/devices/odroid_sysfs.15(/.*)?   u:object_r:sysfs_odroid:s0
+/sys/devices/platform/exynos5-devfreq-mif/devfreq/exynos5-devfreq-mif(/.*)? u:object_r:sysfs_odroid:s0
+
 /efs/bluetooth(/.*)?    u:object_r:bluetooth_data_file:s0
 
 /system/bin/mcDriverDaemon  --  u:object_r:tee_exec:s0
 /system/bin/mngblt		u:object_r:voodik_exec:s0
-#/system/bin/insmod		u:object_r:insmod_exec:s0
 
 #/system/acct			u:object_r:rootfs:s0
-#/system/mnt(/.*)		u:object_r:rootfs:s0
-#/system			u:object_r:rootfs:s0
+/system/mnt(/.*)		u:object_r:rootfs:s0
+/system				u:object_r:rootfs:s0
+/system/storage(/.*)?		u:object_r:storage_file:s0
 
 #/system/storage/sdcard0		u:object_r:rootfs:s0
 #/system/storage/sdcard1		u:object_r:rootfs:s0
@@ -57,3 +70,20 @@
 #/system/sbin/healthd		u:object_r:rootfs:s0
 #/system/watchdogd		u:object_r:rootfs:s0
 
+/system/init\..*		u:object_r:rootfs:s0
+
+/system/bin/init		u:object_r:init_exec:s0
+/system/bin/adbd		u:object_r:rootfs:s0
+/system/bin/healthd		u:object_r:rootfs:s0
+
+/system/build\.prop        u:object_r:rootfs:s0
+/system/default\.prop      u:object_r:rootfs:s0
+/system/fstab\..*          u:object_r:rootfs:s0
+/system/res(/.*)?          u:object_r:rootfs:s0
+/system/selinux_version    u:object_r:rootfs:s0
+/system/ueventd\..*        u:object_r:rootfs:s0
+/system/verity_key         u:object_r:rootfs:s0
+
+/system/config             u:object_r:rootfs:s0
+/system/persist            u:object_r:rootfs:s0
+/system/persist/properties(/.*)?         u:object_r:persist_property_file:s0

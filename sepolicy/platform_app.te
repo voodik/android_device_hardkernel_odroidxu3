@@ -1,7 +1,14 @@
 #============= platform_app ==============
-allow platform_app su_exec:file { read execute open execute_no_trans };
+allow platform_app su_exec:file { execute execute_no_trans getattr open read };
 allow platform_app sudaemon:unix_stream_socket connectto;
 allow platform_app superuser_device:sock_file write;
-allow platform_app kernel:system module_request;
-allow platform_app sysfs_devices_system_cpu:file write;
+allow platform_app sysfs_odroid:dir search;
+allow platform_app sysfs_odroid:file { getattr open read write };
+allow platform_app property_socket:sock_file write;
+allow platform_app init:unix_stream_socket connectto;
+allow platform_app powerctl_prop:property_service set;
+allow platform_app property_socket:sock_file write;
+allow platform_app self:process ptrace;
+allow platform_app sysfs_odroid:file write;
 
+set_prop(platform_app, powerctl_prop)

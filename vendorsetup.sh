@@ -1,1 +1,1 @@
-add_lunch_combo cm_odroidxu3-userdebug
+add_lunch_combo lineage_odroidxu3-userdebug

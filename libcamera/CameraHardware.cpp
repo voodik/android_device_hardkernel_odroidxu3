@@ -905,25 +905,17 @@ void CameraHardware::initDefaultParameters()
     p.set(CameraParameters::KEY_SUPPORTED_FLASH_MODES,"off");
     p.set(CameraParameters::KEY_FLASH_MODE,"off");
 
-    p.set(CameraParameters::KEY_EXPOSURE_COMPENSATION_STEP,0);
-    p.set(CameraParameters::KEY_FOCAL_LENGTH, "4.31");
-    p.set(CameraParameters::KEY_HORIZONTAL_VIEW_ANGLE, "54.8");
-    p.set(CameraParameters::KEY_VERTICAL_VIEW_ANGLE, "42.5");
-
     // Focus modes
     p.set(CameraParameters::KEY_SUPPORTED_FOCUS_MODES,"fixed");
     p.set(CameraParameters::KEY_FOCUS_MODE,"fixed");
 
-//#if 0
-    p.set(CameraParameters::KEY_JPEG_THUMBNAIL_HEIGHT,160);
+#if 0
+    p.set(CameraParameters::KEY_JPEG_THUMBNAIL_HEIGHT,0);
     p.set(CameraParameters::KEY_JPEG_THUMBNAIL_QUALITY,75);
-//    p.set(CameraParameters::KEY_SUPPORTED_JPEG_THUMBNAIL_SIZES,"0x0");
-//    p.set(CameraParameters::JPEG_AVAILABLE_THUMBNAIL_SIZES,"320x240,0x0");
-//    p.set("jpeg-thumbnail-size","0x0");
-    p.set("jpeg-thumbnail-size-values","160x120,160x90,144x96,0x0");
-//    p.set(CameraParameters::KEY_JPEG_THUMBNAIL_SIZE,"0x0,320x240");
-    p.set(CameraParameters::KEY_JPEG_THUMBNAIL_WIDTH,120);
-//#endif
+    p.set(CameraParameters::KEY_SUPPORTED_JPEG_THUMBNAIL_SIZES,"0x0");
+    p.set("jpeg-thumbnail-size","0x0");
+    p.set(CameraParameters::KEY_JPEG_THUMBNAIL_WIDTH,0);
+#endif
 
     // Picture - Only JPEG supported
     p.set(CameraParameters::KEY_SUPPORTED_PICTURE_FORMATS,CameraParameters::PIXEL_FORMAT_JPEG); // ONLY jpeg
@@ -966,6 +958,14 @@ void CameraHardware::initDefaultParameters()
     p.set(CameraParameters::KEY_MAX_ZOOM, "100");
     p.set(CameraParameters::KEY_ZOOM_RATIOS, "100");
     p.set(CameraParameters::KEY_ZOOM_SUPPORTED, "false");
+
+    // missing parameters for Camera2
+    p.set(CameraParameters::KEY_FOCAL_LENGTH, 4.31);
+    p.set(CameraParameters::KEY_HORIZONTAL_VIEW_ANGLE, 90);
+    p.set(CameraParameters::KEY_VERTICAL_VIEW_ANGLE, 90);
+    p.set(CameraParameters::KEY_SUPPORTED_JPEG_THUMBNAIL_SIZES, "640x480,0x0");
+    p.set(CameraParameters::KEY_EXPOSURE_COMPENSATION, "6");
+    p.set(CameraParameters::KEY_EXPOSURE_COMPENSATION_STEP, "0.5");
 
     if (setParameters(p.flatten()) != NO_ERROR) {
         ALOGE("CameraHardware::initDefaultParameters: Failed to set default parameters.");

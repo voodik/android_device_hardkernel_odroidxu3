@@ -1,62 +1,27 @@
 import init.odroidxu3.usb.rc
 import init.odroidxu3.wifi.rc
 
+on early-init
+    mount debugfs debugfs /sys/kernel/debug
+    write /proc/irq/104/smp_affinity "f0"
+    write /proc/irq/105/smp_affinity "f0"
+    write /proc/irq/107/smp_affinity "f0"
+    write /proc/irq/117/smp_affinity "f0"
+    write /proc/irq/118/smp_affinity "f0"
+    write /proc/irq/149/smp_affinity "f0"
+    write /proc/irq/251/smp_affinity "f0"
+    write /proc/irq/404/smp_affinity "f0"
+
 on init
     mkdir /persist 0771 system system
-    mkdir /mnt/shell/emulated 0700 shell shell
-    mkdir /mnt/shell/container 0700 system system
-    mkdir /storage 0550 system sdcard_r
-    mkdir /storage/emulated 0555 root root
-    mkdir /storage/sdcard0/.android_secure 0775 system system
-
-    mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
-    mkdir /storage/sdcard0 0700 root root
-
-    mkdir /mnt/media_rw/sdcard1 0700 media_rw media_rw
-    mkdir /storage/sdcard1 0700 root root
-
-    mkdir /mnt/media_rw/usb2host 0700 media_rw media_rw
-    mkdir /storage/usb2host 0700 root root
-
-    mkdir /mnt/media_rw/usb3device 0700 media_rw media_rw
-    mkdir /storage/usb3device 0700 root root
-
-    mkdir /mnt/media_rw/usb3host 0700 media_rw media_rw
-    mkdir /storage/usb3host 0700 root root
-
-#    symlink /storage/sdcard0/.android_secure /sdcard/.android_secure
-#    symlink /storage/sdcard0/.android_secure /mnt/sdcard/.android_secure
-
-    export EXTERNAL_STORAGE /storage/sdcard0
-    export SECONDARY_STORAGE /storage/sdcard1:/storage/usb2host:/storage/usb3device:/storage/usb3host
-
-    # for backwards compatibilit
-    symlink /storage/sdcard0 /sdcard
-    symlink /storage/sdcard0 /mnt/sdcard
-    symlink /storage/sdcard1 /extSdCard
-    symlink /storage/sdcard1 /mnt/extSdCard
-    symlink /storage/sdcard1 /external_sd
-    symlink /storage/usb2host /usb2host
-    symlink /storage/usb2host /mnt/usb2host
-    symlink /storage/usb3device /usb3device
-    symlink /storage/usb3device /mnt/usb3device
-    symlink /storage/usb3host /usb3host
-    symlink /storage/usb3host /mnt/usb3host
-
-
-     mkdir /efs 0771 radio system
-#    symlink /dev/block/mmcblk0p13 /dev/mbin0
-#    restorecon /dev/mbin0
-
-#    symlink /dev/block/mmcblk0p8 /dev/block/param
-
 
 on fs
     mount_all /fstab.odroidxu3
-#    setprop ro.crypto.fuse_sdcard true
+#    exec - root root -- /system/bin/mngblt
 
 on post-fs
-    # Increase max readahead size to 256 KB
+#    setprop ro.product.model ${ro.boot.model}
+
     write /sys/block/mmcblk0/queue/read_ahead_kb 256
     # for controlling write performance boosting
     chown system radio /sys/block/mmcblk0/bkops_en
@@ -77,20 +42,27 @@ on post-fs-data
 #-----------------------------------------------------------------------
 
 on boot
-    mount debugfs /sys/kernel/debug /sys/kernel/debug
+#    mount debugfs /sys/kernel/debug /sys/kernel/debug
 
     # Reduce reserved lowmem from ~48MB to ~12MB
     write /proc/sys/vm/lowmem_reserve_ratio "128 128"
+    write /proc/sys/vm/min_free_kbytes 32768
 
     # Set up kernel tracing, but disable it by default
-    chmod 0222 /sys/kernel/debug/tracing/trace_marker
-    write /sys/kernel/debug/tracing/tracing_on 0
+#    chmod 0222 /sys/kernel/debug/tracing/trace_marker
+#    write /sys/kernel/debug/tracing/tracing_on 0
 
     setprop ro.build.product odroidxu3
     setprop ro.product.device odroidxu3
 
     # 4.3 needs this
     chmod 0644 /proc/cmdline
+
+    write /sys/class/gpio/export 25
+    chmod 0222 /sys/class/gpio/export
+    chmod 0666 /sys/class/gpio/gpio25/edge
+    chmod 0666 /sys/class/gpio/gpio25/value
+    chmod 0666 /sys/class/gpio/gpio25/direction
 
 # Permissions for bluetooth
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
@@ -103,6 +75,14 @@ on boot
 # Permissions for Gscaler log level
     chmod 0644 /sys/module/gsc/parameters/gsc_dbg
 
+    chmod 0666 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "ondemand"
+    chmod 0666 /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "ondemand"
+    chmod 0666 /sys/class/devfreq/exynos5-devfreq-mif/governor
+    write /sys/class/devfreq/exynos5-devfreq-mif/governor "simple_exynos"
+    chmod 0666 /sys/class/devfreq/exynos5-devfreq-mif/max_freq
+    write /sys/class/devfreq/exynos5-devfreq-mif/max_freq 825000
 
 # Service begin here
 
@@ -112,46 +92,24 @@ service watchdogd /sbin/watchdogd 10 20
     seclabel u:r:watchdogd:s0
 	disabled
 
-service init_bltt /system/bin/mngblt
+service insmod_cdc /system/bin/insmod /system/lib/modules/cdc_ether.ko
     class core
+    seclabel u:r:toolbox:s0
     user root
     group root
     oneshot
 
-# virtual sdcard daemon running as media_rw (1023)
-#service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated
-#    class late_start
-
-service fuse_sdcard0 /system/bin/sdcard -u 1023 -g 1023 -w 1023 /mnt/media_rw/sdcard0 /storage/sdcard0
-    class late_start
-    disabled
-
-service fuse_sdcard1 /system/bin/sdcard -u 1023 -g 1023 -w 1023 /mnt/media_rw/sdcard1 /storage/sdcard1
-    class late_start
-    disabled
-
-service fuse_usb2host /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usb2host /storage/usb2host
-    class late_start
-    disabled
-
-service fuse_usb3device /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usb3device /storage/usb3device
-    class late_start
-    disabled
-
-service fuse_usb3host /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usb3host /storage/usb3host
-    class late_start
-    disabled
-
 service insmod_ax88179 /system/bin/insmod /system/lib/modules/ax88179_178a.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
+    disabled
     oneshot
 
 service insmod_r8152 /system/bin/insmod /system/lib/modules/r8152.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -159,7 +117,7 @@ service insmod_r8152 /system/bin/insmod /system/lib/modules/r8152.ko
                 
 service insmod_smsc95xx /system/bin/insmod /system/lib/modules/smsc95xx.ko    
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -167,7 +125,7 @@ service insmod_smsc95xx /system/bin/insmod /system/lib/modules/smsc95xx.ko
 
 service insmod_ralink1 /system/bin/insmod /system/lib/modules/rt2x00lib.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -175,7 +133,7 @@ service insmod_ralink1 /system/bin/insmod /system/lib/modules/rt2x00lib.ko
 
 service insmod_ralink2 /system/bin/insmod /system/lib/modules/rt2x00usb.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -183,22 +141,86 @@ service insmod_ralink2 /system/bin/insmod /system/lib/modules/rt2x00usb.ko
 
 service insmod_ralink3 /system/bin/insmod /system/lib/modules/rt2800lib.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
     oneshot
 
+service insmod_ralink4 /system/bin/insmod /system/lib/modules/rt2800usb.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    disabled
+    oneshot
+
+service insmod_8188eu /system/bin/insmod /system/lib/modules/8188eu.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
+service insmod_8192cu /system/bin/insmod /system/lib/modules/8192cu.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
+service insmod_8192du /system/bin/insmod /system/lib/modules/8192du.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
+service insmod_8192eu /system/bin/insmod /system/lib/modules/8192eu.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
+service insmod_8723au /system/bin/insmod /system/lib/modules/8723au.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
+service insmod_8812au /system/bin/insmod /system/lib/modules/8812au.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
+service insmod_8821au /system/bin/insmod /system/lib/modules/8821au.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
+service insmod_88x2bu /system/bin/insmod /system/lib/modules/88x2bu.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    oneshot
+
 service insmod_vb2vmalc /system/bin/insmod /system/lib/modules/videobuf2-vmalloc.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     oneshot
 
 service insmod_saa7115 /system/bin/insmod /system/lib/modules/saa7115.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -206,15 +228,24 @@ service insmod_saa7115 /system/bin/insmod /system/lib/modules/saa7115.ko
 
 service insmod_stk1160 /system/bin/insmod /system/lib/modules/stk1160.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
     oneshot
 
+service insmod_usbtv /system/bin/insmod /system/lib/modules/usbtv.ko
+    class core
+    seclabel u:r:toolbox:s0
+    user root
+    group root
+    disabled
+    oneshot
+
+
 service insmod_uvccam /system/bin/insmod /system/lib/modules/uvcvideo.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -222,14 +253,14 @@ service insmod_uvccam /system/bin/insmod /system/lib/modules/uvcvideo.ko
 
 service insmod_usbmidi /system/bin/insmod /system/lib/modules/snd-usbmidi-lib.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     oneshot
 
 service insmod_usb_audio /system/bin/insmod /system/lib/modules/snd-usb-audio.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -237,7 +268,7 @@ service insmod_usb_audio /system/bin/insmod /system/lib/modules/snd-usb-audio.ko
 
 service insmod_cdc_acm /system/bin/insmod /system/lib/modules/cdc-acm.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -245,7 +276,7 @@ service insmod_cdc_acm /system/bin/insmod /system/lib/modules/cdc-acm.ko
 
 service insmod_pl2303 /system/bin/insmod /system/lib/modules/pl2303.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -253,7 +284,7 @@ service insmod_pl2303 /system/bin/insmod /system/lib/modules/pl2303.ko
 
 service insmod_ftdi /system/bin/insmod /system/lib/modules/ftdi_sio.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -261,7 +292,7 @@ service insmod_ftdi /system/bin/insmod /system/lib/modules/ftdi_sio.ko
 
 service insmod_cp210x /system/bin/insmod /system/lib/modules/cp210x.ko
     class core
-    seclabel u:r:insmod:s0
+    seclabel u:r:toolbox:s0
     user root
     group root
     disabled
@@ -273,21 +304,21 @@ service gps_cfg /system/bin/sh /system/etc/init.gps.sh
     disabled
     oneshot
 
-# Kick watchdogd if debug_level is low
-on property:ro.debug_level=0x4f4c
-	start watchdogd
-
 on property:ro.radio.noril=0
     setprop rild.libpath "/system/lib/libril-rk29-dataonly.so"
+
+on property:ro.disable.ethernet=0
+    start insmod_ax88179
 
 on property:init.svc.insmod_ax88179=stopped
     start insmod_r8152
 
 on property:init.svc.insmod_r8152=stopped
     start insmod_smsc95xx
-
-on property:wlan.modname=rt2800usb
     start insmod_ralink1
+
+#on property:wlan.modname=rt2800usb
+#    start insmod_ralink1
 
 on property:init.svc.insmod_ralink1=stopped
     start insmod_ralink2
@@ -295,11 +326,15 @@ on property:init.svc.insmod_ralink1=stopped
 on property:init.svc.insmod_ralink2=stopped
     start insmod_ralink3
 
+on property:init.svc.insmod_ralink3=stopped
+    start insmod_ralink4
+
 on property:init.svc.insmod_vb2vmalc=stopped
     start insmod_saa7115
 
 on property:init.svc.insmod_saa7115=stopped
     start insmod_stk1160
+    start insmod_usbtv
 
 on property:init.svc.insmod_stk1160=stopped
     start insmod_uvccam
@@ -307,34 +342,6 @@ on property:init.svc.insmod_stk1160=stopped
 on property:init.svc.insmod_usbmidi=stopped
     start insmod_usb_audio
 
-
-service dhcpcd_bt-pan /system/bin/dhcpcd -ABKL
-    disabled
-    oneshot
-
-service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
-	class main
-	disabled
-	oneshot
-
-service dhcpcd_eth1 /system/bin/dhcpcd -ABKL
-        class main
-        disabled
-        oneshot
-
-service iprenew_bt-pan /system/bin/dhcpcd -n
-    disabled
-    oneshot
-
-service iprenew_eth0 /system/bin/dhcpcd -n
-    class main
-    disabled
-    oneshot
-
-service iprenew_eth1 /system/bin/dhcpcd -n
-    class main
-    disabled
-    oneshot
 
 on property:init.svc.bootanim=stopped
      start insmod_cdc_acm

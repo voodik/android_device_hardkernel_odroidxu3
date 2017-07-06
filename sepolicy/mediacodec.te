@@ -1,0 +1,8 @@
+#============= mediacodec ==============
+allow mediacodec kernel:fd use;
+allow mediacodec sysfs:file { read getattr open };
+allow mediacodec system_file:dir { read open };
+
+#============= mediacodec ==============
+allow mediacodec camera_device:chr_file getattr;
+

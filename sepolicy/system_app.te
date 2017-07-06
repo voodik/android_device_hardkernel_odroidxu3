@@ -1,2 +1,6 @@
 allow system_app system_data_file:dir { read getattr open };
-allow system_app system_data_file:file { write getattr setattr read lock open };
+allow system_app sysfs_odroid:file { getattr open read write };
+allow system_app sysfs_devices_system_cpu:file { getattr open read write };
+
+set_prop(system_app, odroid_prop)
+set_prop(system_app, system_prop)

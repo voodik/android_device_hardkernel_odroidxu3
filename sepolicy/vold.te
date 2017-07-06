@@ -1,5 +1,7 @@
 #============= vold ==============
-allow vold kernel:system module_request;
-allow vold system_file:dir mounton;
 allow vold vold_tmpfs:file create_file_perms;
 allow vold proc:file rw_file_perms;
+
+allow vold sysfs_odroid:dir search;
+allow vold sysfs_odroid:file { getattr open read };
+

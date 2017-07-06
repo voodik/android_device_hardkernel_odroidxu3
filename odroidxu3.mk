@@ -36,8 +36,8 @@ PRODUCT_PACKAGES += \
     ueventd.odroidxu3.rc
 
 # Recovery
-PRODUCT_PACKAGES += \
-    init.recovery.odroidxu3.rc
+#PRODUCT_PACKAGES += \
+#    init.recovery.odroidxu3.rc
 
 # Audio
 PRODUCT_COPY_FILES += \
@@ -69,7 +69,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     make_ext4fs \
     e2fsck \
-    setup_fs
+    setup_fs \
+    su
 
 # GPS
 #PRODUCT_COPY_FILES += \
@@ -82,17 +83,46 @@ PRODUCT_PACKAGES += \
     gralloc.exynos5 \
     hwcomposer.exynos5 \
     libion \
-    libcec
+    hdmi_cec.odroidxu3
+
+# HAL blob compatibility
+PRODUCT_PACKAGES += \
+    libstlport
+
+# DVB
+PRODUCT_PACKAGES += \
+    mumudvb \
+    libavfilter \
+    libavresample \
+    libiconv \
 
 # Keylayouts
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/idc/odroid-ts.idc:system/usr/idc/odroid-ts.idc \
+    $(LOCAL_PATH)/idc/Vendor_0eef_Product_0005.idc:system/usr/idc/Vendor_0eef_Product_0005.idc \
+    $(LOCAL_PATH)/idc/Vendor_03fc_Product_05d8.idc:system/usr/idc/Vendor_03fc_Product_05d8.idc \
+    $(LOCAL_PATH)/idc/Vendor_1870_Product_0119.idc:system/usr/idc/Vendor_1870_Product_0119.idc \
+    $(LOCAL_PATH)/idc/Vendor_1870_Product_0100.idc:system/usr/idc/Vendor_1870_Product_0100.idc \
+    $(LOCAL_PATH)/idc/Vendor_2808_Product_81c9.idc:system/usr/idc/Vendor_2808_Product_81c9.idc \
+    $(LOCAL_PATH)/idc/Vendor_16b4_Product_0704.idc:system/usr/idc/Vendor_16b4_Product_0704.idc \
+    $(LOCAL_PATH)/idc/Vendor_16b4_Product_0705.idc:system/usr/idc/Vendor_16b4_Product_0705.idc \
+    $(LOCAL_PATH)/idc/Vendor_04d8_Product_0c03.idc:system/usr/idc/Vendor_04d8_Product_0c03.idc \
+    $(LOCAL_PATH)/idc/Vendor_04DD_Product_9570.idc:system/usr/idc/Vendor_04DD_Product_9570.idc \
     $(LOCAL_PATH)/keylayout/odroid-ts.kl:system/usr/keylayout/odroid-ts.kl \
+    $(LOCAL_PATH)/keylayout/Vendor_054c_Product_05c4.kl:system/usr/keylayout/Vendor_054c_Product_05c4.kl \
     $(LOCAL_PATH)/keylayout/odroid-keypad.kl:system/usr/keylayout/odroid-keypad.kl
+
+# Hdmi CEC: Odroid-XU3 works as a playback device (4).
+PRODUCT_PROPERTY_OVERRIDES += ro.hdmi.device_type=4
+
 
 # Keystore
 #PRODUCT_PACKAGES += \
 #    keystore.exynos5
+
+# Memtrack
+PRODUCT_PACKAGES += \
+    memtrack.exynos5
 
 # Lights
 #PRODUCT_PACKAGES += \
@@ -121,11 +151,12 @@ PRODUCT_PACKAGES += \
 # OMX
 PRODUCT_PACKAGES += \
     libExynosOMX_Core \
-    libOMX.Exynos.MPEG4.Decoder \
     libOMX.Exynos.AVC.Decoder \
-    libOMX.Exynos.VP8.Decoder \
-    libOMX.Exynos.MPEG4.Encoder \
     libOMX.Exynos.AVC.Encoder \
+    libOMX.Exynos.MPEG2.Decoder \
+    libOMX.Exynos.MPEG4.Decoder \
+    libOMX.Exynos.MPEG4.Encoder \
+    libOMX.Exynos.VP8.Decoder \
     libOMX.Exynos.VP8.Encoder \
     libstagefrighthw
 
@@ -135,6 +166,10 @@ PRODUCT_PACKAGES += \
 	chat \
 	mngblt
 
+# Telephony-ext
+PRODUCT_PACKAGES += telephony-ext
+PRODUCT_BOOT_JARS += telephony-ext
+
 #USB 3g support
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/etc/apns-conf.xml:system/etc/apns-conf.xml \
@@ -143,7 +178,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/usb3g/etc/ppp/call-pppd:system/etc/ppp/call-pppd \
     $(LOCAL_PATH)/usb3g/etc/operator_table:system/etc/operator_table \
     $(LOCAL_PATH)/usb3g/bin/usb_modeswitch.sh:system/bin/usb_modeswitch.sh \
-    $(LOCAL_PATH)/usb3g/bin/usb_modeswitch:system/bin/usb_modeswitch \
     $(LOCAL_PATH)/usb3g/lib/libril-rk29-dataonly.so:system/lib/libril-rk29-dataonly.so
 
 modeswitch_files := $(shell ls $(LOCAL_PATH)/usb3g/etc/usb_modeswitch.d)
@@ -154,15 +188,26 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ril.function.dataonly=1 \
     ro.radio.noril=1 \
-    config.disable_bluetooth=true
+    ro.disable.ethernet=0 \
+    touchscreen.reverse=false
+
+
+#Bluetooth
+PRODUCT_PACKAGES += \
+    btattach \
+    hciconfig \
+    hcitool \
 
 #USB GPS support
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/usb3g/lib/gps.default.so:system/lib/hw/gps.default.so \
-    $(LOCAL_PATH)/configs/init.gps.sh:system/etc/init.gps.sh
+#PRODUCT_COPY_FILES += \
+#    $(LOCAL_PATH)/usb3g/lib/gps.default.so:system/lib/hw/gps.default.so \
+#    $(LOCAL_PATH)/configs/init.gps.sh:system/etc/init.gps.sh
 
 PRODUCT_PACKAGES += \
     gps.odroidxu3
+
+PRODUCT_PACKAGES += \
+    sensors.odroidxu3
 
 #RT5370 module firmware
 PRODUCT_COPY_FILES += \
@@ -170,9 +215,7 @@ $(LOCAL_PATH)/configs/rt2870.bin:system/etc/firmware/rt2870.bin
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.kernel.android.gps=ttyACM0 \
-    ro.kernel.android.gps.speed=9600 \
-    wlan.modname=8192cu \
-    persist.service.bt.a2dp.sink=true
+    ro.kernel.android.gps.speed=9600
 
 #Hardkernel
 PRODUCT_PACKAGES += \
@@ -203,11 +246,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # System properties
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608 \
-    ro.adb.secure=0 \
-    ro.secure=0 \
     mouse.right.click=back \
-    ro.rfkilldisabled=1 \
-    wifi.interface=wlan0
+    ro.rfkilldisabled=1
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.dex2oat-filter=speed \
+    dalvik.vm.dex2oat-swap=false
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -223,7 +267,9 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml \
-    frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml
+    frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+    frameworks/native/data/etc/android.hardware.hdmi.cec.xml:system/etc/permissions/android.hardware.hdmi.cec.xml \
+    frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml
 
 # Device uses high-density artwork where available
 PRODUCT_AAPT_CONFIG := normal

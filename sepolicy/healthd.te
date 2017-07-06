@@ -1,2 +1,2 @@
 #============= healthd ==============
-allow healthd system_file:file entrypoint;
+#allow healthd system_file:file entrypoint;

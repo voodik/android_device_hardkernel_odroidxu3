@@ -20,8 +20,8 @@
  */
 
 #define LOG_NDEBUG 0
-#define DEFAULT_DEVICE_FRONT "/dev/video0"
-#define DEFAULT_DEVICE_BACK  "/dev/video1"
+#define DEFAULT_DEVICE_FRONT "/dev/video1"
+#define DEFAULT_DEVICE_BACK  "/dev/video0"
 #define CONFIG_FILE "/etc/camera.cfg"
 #define LOG_TAG "Camera_Factory"
 
@@ -108,6 +108,7 @@ int CameraFactory::getCameraInfo(int camera_id, struct camera_info* info)
 void CameraFactory::parseConfig(const char* configFile)
 {
     ALOGD("CameraFactory::parseConfig: configFile = %s", configFile);
+    usleep(10000*1000);
 
     FILE* config = fopen(configFile, "r");
     if (config != NULL) {
