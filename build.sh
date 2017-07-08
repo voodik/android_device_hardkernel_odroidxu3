@@ -45,11 +45,8 @@ function build_android()
         echo "source build/envsetup.sh"
         source build/envsetup.sh
         echo
-        echo "lunch cm_$PRODUCT_BOARD-userdebug"
-        lunch cm_$PRODUCT_BOARD-userdebug
-	echo 
-	echo "Get CM-11 prebuilds"
-	vendor/cm/get-prebuilts
+        echo "lunch lineage_$PRODUCT_BOARD-userdebug"
+        lunch lineage_$PRODUCT_BOARD-userdebug
         echo
         echo "make -j$CPU_JOB_NUM"
         echo
