@@ -1,5 +1,5 @@
 #============= platform_app ==============
-allow platform_app su_exec:file { execute execute_no_trans getattr open read };
+allow platform_app su_exec:file { execute getattr open read };
 allow platform_app sudaemon:unix_stream_socket connectto;
 allow platform_app superuser_device:sock_file write;
 allow platform_app sysfs_odroid:dir search;
