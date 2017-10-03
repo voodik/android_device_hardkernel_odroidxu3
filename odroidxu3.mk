@@ -277,6 +277,9 @@ PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
 PRODUCT_CHARACTERISTICS := tablet
 
+# inherit the opengapps config
+-include $(LOCAL_PATH)/opengapps.mk
+
 # call dalvik heap config
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxhdpi-2048-dalvik-heap.mk)
 
