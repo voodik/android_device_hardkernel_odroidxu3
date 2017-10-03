@@ -84,7 +84,6 @@ function copy_root_2_system()
 
     rm -fr $TMP_OUT_DIR/system/priv-app/TeleService
 
-    cp -arp $ROOT_DIR/device/hardkernel/odroidxu3/gapps7.1/system/* $TMP_OUT_DIR/system/
   	echo $SYSTEMIMAGE_PARTITION_SIZE
 
     find $TMP_OUT_DIR/system -name .svn | xargs rm -rf
@@ -109,10 +108,9 @@ function make_update_zip()
     echo '$PRODUCT_BOARD'
 
 	cp $KERN_DIR/zImage-dtb $TMP_OUT_DIR/update/
-	cp $TMP_OUT_DIR/system.img $TMP_OUT_DIR/update/
+	split --bytes=128M $TMP_OUT_DIR/system.img $TMP_OUT_DIR/update/system_
 	cp $OUT_DIR/cache.img $TMP_OUT_DIR/update/
-        cp $ROOT_DIR/device/hardkernel/odroidxu3/bootloader/* $TMP_OUT_DIR/update/
-        tar xvf $ROOT_DIR/device/hardkernel/odroidxu3/userdata/userdata.tar.gz -C $TMP_OUT_DIR/update/
+	cp $ROOT_DIR/device/hardkernel/odroidxu3/bootloader/* $TMP_OUT_DIR/update/
 
 	if [ -f $TMP_OUT_DIR/update.zip ]
 	then
