@@ -90,7 +90,6 @@ on boot
 service watchdogd /sbin/watchdogd 10 20
     class core
     seclabel u:r:watchdogd:s0
-	disabled
 
 service insmod_cdc /system/bin/insmod /system/lib/modules/cdc_ether.ko
     class core
