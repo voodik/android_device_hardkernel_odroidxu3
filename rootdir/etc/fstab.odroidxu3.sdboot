@@ -5,8 +5,8 @@
 
 
 /dev/block/mmcblk0p2    /system             ext4      rw,noatime,nodiratime                                                     wait
-/dev/block/mmcblk0p4    /cache              ext4      nosuid,nodev,noatime,noauto_da_alloc,journal_async_commit                 wait
-/dev/block/mmcblk0p3    /data               ext4      nosuid,nodev,noatime,noauto_da_alloc,journal_async_commit,errors=panic    wait,encryptable=footer
+/dev/block/mmcblk0p4    /cache              ext4      nosuid,nodev,noatime,noauto_da_alloc,journal_async_commit                 wait,formattable
+/dev/block/mmcblk0p3    /data               ext4      nosuid,nodev,noatime,noauto_da_alloc,journal_async_commit,errors=panic    wait,formattable,encryptable=footer
 
 # SD card
 /devices/12220000.dwmmc2/mmc_host/mmc1*        /storage/odroid    auto    defaults                        voldmanaged=odroid:1,encryptable=userdata,nonremovable
