@@ -25,4 +25,4 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.opa.eligible_device=true
 
 # Build OpenGApps
-$(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)
+$(call inherit-product-if-exists, vendor/opengapps/build/opengapps-packages.mk)
