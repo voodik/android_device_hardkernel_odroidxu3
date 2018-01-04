@@ -28,6 +28,7 @@ on post-fs
     chmod 0664 /sys/block/mmcblk0/bkops_en
 
 on post-fs-data
+    rm /data/property/persist.demo.hdmirotation
     mkdir /data/media 0770 media_rw media_rw
 
     mkdir /data/misc/radio 0775 radio system
@@ -146,7 +147,7 @@ service insmod_ralink3 /system/bin/insmod /system/lib/modules/rt2800lib.ko
     disabled
     oneshot
 
-service insmod_ralink4 /system/bin/insmod /system/lib/modules/rt2800usb.ko
+service insmod_ralink4 /system/bin/insmod /system/lib/modules/rt2800usb.ko nohwcrypt=y
     class core
     seclabel u:r:toolbox:s0
     user root
