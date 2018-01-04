@@ -82,6 +82,7 @@
 # USB 3g Dongle
 /dev/ttyUSB*              0666   radio      radio
 /dev/ttyACM*              0666   radio      radio
+/dev/ttyGPS*              0666   radio      radio
 
 # USB Acessory
 /dev/usb/lp*              0660   system     usb

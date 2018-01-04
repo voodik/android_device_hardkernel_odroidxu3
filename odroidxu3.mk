@@ -178,6 +178,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/usb3g/etc/ppp/call-pppd:system/etc/ppp/call-pppd \
     $(LOCAL_PATH)/usb3g/etc/operator_table:system/etc/operator_table \
     $(LOCAL_PATH)/usb3g/bin/usb_modeswitch.sh:system/bin/usb_modeswitch.sh \
+    $(LOCAL_PATH)/usb3g/bin/usb_modeswitch:system/bin/usb_modeswitch \
     $(LOCAL_PATH)/usb3g/lib/libril-rk29-dataonly.so:system/lib/libril-rk29-dataonly.so
 
 modeswitch_files := $(shell ls $(LOCAL_PATH)/usb3g/etc/usb_modeswitch.d)
@@ -214,7 +215,7 @@ PRODUCT_COPY_FILES += \
 $(LOCAL_PATH)/configs/rt2870.bin:system/etc/firmware/rt2870.bin
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.kernel.android.gps=ttyACM0 \
+    ro.kernel.android.gps=ttyGPS0 \
     ro.kernel.android.gps.speed=9600
 
 #Hardkernel

@@ -28,6 +28,7 @@
 #include <time64.h>
 #include <signal.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #define  LOG_TAG  "gps_serial"
 
@@ -35,19 +36,12 @@
 #include <cutils/sockets.h>
 #include <cutils/properties.h>
 #include <hardware/gps.h>
-
-/* this is the state of our connection to the qemu_gpsd daemon */
-typedef struct {
-    int                     init;
-    int                     fd;
-    GpsCallbacks            *callbacks;
-    GpsStatus               status;
-    pthread_t               thread;
-    int                     control[2];
-} GpsState;
+#include "gpslib.h"
 
 static GpsState  _gps_state[1];
-static int    id_in_fixed[12];
+static int    id_in_gp_fixed[12];
+static int    id_in_gl_fixed[12];
+//static int    xz = 0;
 //#define  GPS_DEBUG  1
 
 #define  DFR(...)   ALOGD(__VA_ARGS__)
@@ -205,7 +199,9 @@ typedef struct {
     int     utc_day;
     int     utc_diff;
     GpsLocation  fix;
-    GpsSvStatus sv_status;
+    GnssSvStatus sv_gl_status;
+    GnssSvStatus sv_gp_status;
+    GnssSvStatus sv_gns_status;
     gps_location_callback  callback;
     char    in[ NMEA_MAX_SIZE+1 ];
     int update;
@@ -222,12 +218,13 @@ void update_gps_status(GpsStatusValue val)
 }
 
 
-void update_gps_svstatus(GpsSvStatus *val)
+void update_gns_svstatus(GnssSvStatus *val)
 {
     GpsState*  state = _gps_state;
     //Should be made thread safe...
-    if (state->callbacks->sv_status_cb)
-        state->callbacks->sv_status_cb(val);
+	
+    if (state->callbacks->gnss_sv_status_cb)
+        state->callbacks->gnss_sv_status_cb(val);
 }
 
 
@@ -495,26 +492,62 @@ nmea_reader_update_speed( NmeaReader*  r,
 
 
 static int
-nmea_reader_update_svs( NmeaReader*  r, int inview, int num, int i, Token prn, Token elevation, Token azimuth, Token snr )
+nmea_reader_update_svs_gl( NmeaReader*  r, int inview, int num, int i, Token prn, Token elevation, Token azimuth, Token snr )
 {
     int o;
     int prnid;
+	int sid, svid;
+	
+
     i = (num - 1)*4 + i;
     if (i < inview) {
-        r->sv_status.sv_list[i].prn=str2int(prn.p,prn.end);
-        r->sv_status.sv_list[i].elevation=str2int(elevation.p,elevation.end);
-        r->sv_status.sv_list[i].azimuth=str2int(azimuth.p,azimuth.end);
-        r->sv_status.sv_list[i].snr=str2int(snr.p,snr.end);
-        for (o=0;o<12;o++){
-            if (id_in_fixed[o]==str2int(prn.p,prn.end)){
-		prnid = str2int(prn.p, prn.end);
-		r->sv_status.used_in_fix_mask |= (1ul << (prnid-1));
-	    }
+        sid = str2int(prn.p,prn.end);
+
+		svid = sid - 64;
+		r->sv_gl_status.gnss_sv_list[i].constellation = GNSS_CONSTELLATION_GLONASS;
+        r->sv_gl_status.gnss_sv_list[i].svid=svid;
+        r->sv_gl_status.gnss_sv_list[i].elevation=str2int(elevation.p,elevation.end);
+        r->sv_gl_status.gnss_sv_list[i].azimuth=str2int(azimuth.p,azimuth.end);
+        r->sv_gl_status.gnss_sv_list[i].c_n0_dbhz=str2int(snr.p,snr.end);
+        r->sv_gl_status.gnss_sv_list[i].flags = GNSS_SV_FLAGS_NONE;
+
+			for (o=0;o<12;o++){
+				if (id_in_gl_fixed[o]==sid){
+					r->sv_gl_status.gnss_sv_list[i].flags |= GNSS_SV_FLAGS_USED_IN_FIX;
+					break;
+				}
+			}
+
 	}
-    }
     return 0;
 }
 
+static int
+nmea_reader_update_svs_gp( NmeaReader*  r, int inview, int num, int i, Token prn, Token elevation, Token azimuth, Token snr )
+{
+    int o;
+    int prnid;
+	int sid;
+
+    i = (num - 1)*4 + i;
+    if (i < inview) {
+        sid = str2int(prn.p,prn.end);
+		r->sv_gp_status.gnss_sv_list[i].constellation = GNSS_CONSTELLATION_GPS;
+        r->sv_gp_status.gnss_sv_list[i].svid=sid;
+        r->sv_gp_status.gnss_sv_list[i].elevation=str2int(elevation.p,elevation.end);
+        r->sv_gp_status.gnss_sv_list[i].azimuth=str2int(azimuth.p,azimuth.end);
+        r->sv_gp_status.gnss_sv_list[i].c_n0_dbhz=str2int(snr.p,snr.end);
+        r->sv_gp_status.gnss_sv_list[i].flags = GNSS_SV_FLAGS_NONE;
+
+			for (o=0;o<12;o++){
+				if (id_in_gp_fixed[o]==sid){
+					r->sv_gp_status.gnss_sv_list[i].flags |= GNSS_SV_FLAGS_USED_IN_FIX;
+					break;
+				}
+			}
+	}
+    return 0;
+}
 
 static void
 nmea_reader_parse( NmeaReader*  r )
@@ -597,12 +630,19 @@ nmea_reader_parse( NmeaReader*  r )
         Token tok_vdop = nmea_tokenizer_get(tzer,17);
 
         nmea_reader_update_accuracy(r, tok_hdop);
+		
+		int sid;
+		sid = str2int(tok_id.p,tok_id.end);
 
         int i;
         for ( i=0; i<12; i++ ) {
             Token tok_id  = nmea_tokenizer_get(tzer,3+i);
             if ( tok_id.end > tok_id.p ){
-                id_in_fixed[i]=str2int(tok_id.p,tok_id.end);
+				if (sid > 64){
+					id_in_gl_fixed[i]=str2int(tok_id.p,tok_id.end);
+				} else {
+					id_in_gp_fixed[i]=str2int(tok_id.p,tok_id.end);
+				}
 		D("Satellite used '%.*s'", tok_id.end-tok_id.p, tok_id.p);
 	    }
         }
@@ -644,19 +684,67 @@ nmea_reader_parse( NmeaReader*  r )
         int msg_number = str2int(tok_msg_number.p,tok_msg_number.end);
         int svs_inview = str2int(tok_svs_inview.p,tok_svs_inview.end);
         D("GSV %d %d %d", num_messages, msg_number, svs_inview );
-        if (msg_number==1) {
-	    r->sv_status.used_in_fix_mask = 0ul;
-        }
 
-        nmea_reader_update_svs( r, svs_inview, msg_number, 0, tok_sv1_prn_num, tok_sv1_elevation, tok_sv1_azimuth, tok_sv1_snr );
-        nmea_reader_update_svs( r, svs_inview, msg_number, 1, tok_sv2_prn_num, tok_sv2_elevation, tok_sv2_azimuth, tok_sv2_snr );
-        nmea_reader_update_svs( r, svs_inview, msg_number, 2, tok_sv3_prn_num, tok_sv3_elevation, tok_sv3_azimuth, tok_sv3_snr );
-        nmea_reader_update_svs( r, svs_inview, msg_number, 3, tok_sv4_prn_num, tok_sv4_elevation, tok_sv4_azimuth, tok_sv4_snr );
-        r->sv_status.num_svs=svs_inview;
-		r->sv_status.size = sizeof(r->sv_status);
+		int sid = str2int(tok_sv1_prn_num.p,tok_sv1_prn_num.end);
 
-        if (num_messages==msg_number)
-            update_gps_svstatus(&r->sv_status);
+		if (sid > 64){
+        nmea_reader_update_svs_gl( r, svs_inview, msg_number, 0, tok_sv1_prn_num, tok_sv1_elevation, tok_sv1_azimuth, tok_sv1_snr );
+        nmea_reader_update_svs_gl( r, svs_inview, msg_number, 1, tok_sv2_prn_num, tok_sv2_elevation, tok_sv2_azimuth, tok_sv2_snr );
+        nmea_reader_update_svs_gl( r, svs_inview, msg_number, 2, tok_sv3_prn_num, tok_sv3_elevation, tok_sv3_azimuth, tok_sv3_snr );
+        nmea_reader_update_svs_gl( r, svs_inview, msg_number, 3, tok_sv4_prn_num, tok_sv4_elevation, tok_sv4_azimuth, tok_sv4_snr );
+
+        r->sv_gl_status.num_svs=svs_inview;
+		r->sv_gl_status.size = sizeof(r->sv_gl_status);
+		
+		} else {
+        nmea_reader_update_svs_gp( r, svs_inview, msg_number, 0, tok_sv1_prn_num, tok_sv1_elevation, tok_sv1_azimuth, tok_sv1_snr );
+        nmea_reader_update_svs_gp( r, svs_inview, msg_number, 1, tok_sv2_prn_num, tok_sv2_elevation, tok_sv2_azimuth, tok_sv2_snr );
+        nmea_reader_update_svs_gp( r, svs_inview, msg_number, 2, tok_sv3_prn_num, tok_sv3_elevation, tok_sv3_azimuth, tok_sv3_snr );
+        nmea_reader_update_svs_gp( r, svs_inview, msg_number, 3, tok_sv4_prn_num, tok_sv4_elevation, tok_sv4_azimuth, tok_sv4_snr );
+
+        r->sv_gp_status.num_svs=svs_inview;
+		r->sv_gp_status.size = sizeof(r->sv_gp_status);
+
+		}
+
+
+        if (num_messages==msg_number){
+            int k = 0;
+//			xz++;
+        	for (int i=0; i < GNSS_MAX_SVS; i++){
+        		if (r->sv_gp_status.gnss_sv_list[i].svid > 0){
+        			r->sv_gns_status.gnss_sv_list[k] = r->sv_gp_status.gnss_sv_list[i];
+        			k++;
+        		}
+        	}
+        	for (int i=0; i < GNSS_MAX_SVS; i++){
+        		if (r->sv_gl_status.gnss_sv_list[i].svid > 0){
+        			r->sv_gns_status.gnss_sv_list[k] = r->sv_gl_status.gnss_sv_list[i];
+        			k++;
+        		}
+        	}
+
+        
+
+/**
+			if (xz == 30){
+        	for (int i=0; i < GNSS_MAX_SVS; i++){
+        		if (r->sv_gns_status.gnss_sv_list[i].svid > 0){
+        		    ALOGI("%d svid %d, constellation %d, flags %d",i, r->sv_gns_status.gnss_sv_list[i].svid, r->sv_gns_status.gnss_sv_list[i].constellation, r->sv_gns_status.gnss_sv_list[i].flags);
+        		}
+        	}
+            ALOGI("total %d",k);
+			xz = 0;
+			}
+
+**/
+            r->sv_gns_status.num_svs=k;
+        	r->sv_gns_status.size = sizeof(r->sv_gns_status);
+
+            update_gns_svstatus(&r->sv_gns_status);
+
+}
+
 
 /*
     } else if (!memcmp(tok.p, "GLL", 3)) {
@@ -917,6 +1005,8 @@ gps_state_thread( void*  arg )
         for (ne = 0; ne < nevents; ne++) {
             if ((events[ne].events & (EPOLLERR|EPOLLHUP)) != 0) {
                 ALOGE("EPOLLERR or EPOLLHUP after epoll_wait() !?");
+                usleep(5000*1000);
+		gps_state_init(state, state->callbacks);
                 return;
             }
             if ((events[ne].events & EPOLLIN) != 0) {
@@ -971,14 +1061,16 @@ gps_state_thread( void*  arg )
 }
 
 
-static void
-gps_state_init( GpsState*  state, GpsCallbacks* callbacks )
+void gps_state_init( GpsState*  state, GpsCallbacks* callbacks )
 {
     char   prop[PROPERTY_VALUE_MAX];
     char   baud[PROPERTY_VALUE_MAX];
     char   device[256];
     int    ret;
-    int    done = 0;
+    int    pos = 0;
+    int    len = 0;
+    int    cnt;
+    int    cmp;
 
     struct sigevent tmr_event;
 
@@ -989,16 +1081,61 @@ gps_state_init( GpsState*  state, GpsCallbacks* callbacks )
     state->callbacks  = callbacks;
     D("gps_state_init");
 
+    memset(prop, '\0', sizeof(prop));
+    memset(baud, '\0', sizeof(baud));
+
     // Look for a kernel-provided device name
     if (property_get("ro.kernel.android.gps",prop,"") == 0) {
         D("no kernel-provided gps device name");
         return;
     }
 
-    ALOGE("Waiting GPS device get ready");
-    usleep(10000*1000);
+    for (unsigned int number=0; number < strlen(prop); number++){
+        if (isdigit (prop[number])){
+            pos = number;
+            break;
+        }
+    }
 
-    snprintf(device, sizeof(device), "/dev/%s",prop);
+    len = strlen(prop)-pos;
+    char nodenum[len+1];
+    char nodename[pos+1];
+
+    memset(nodenum, '\0', sizeof(nodenum));
+    memset(nodename, '\0', sizeof(nodename));
+
+    strncpy(nodenum, prop+pos, len);
+    strncpy(nodename, prop, pos);
+
+    cmp = strcmp(nodename,"ttyGPS");
+
+    ALOGI("nodenum %s, nodename %s, strlen %d, len %d, pos %d",nodenum, nodename, strlen(prop), len, pos);
+
+    if (cmp == 0){
+        cnt = 5;
+    } else {
+        cnt = 1;
+    }
+
+    for (int i=0; i < 100; i++){
+        for (int n=0; n < cnt; n++){
+            memset(device, '\0', sizeof(device));
+            snprintf(device, sizeof(device), "/dev/%s%d",nodename,atoi(nodenum)+n);
+                ALOGI("Checking for device %s",device);
+                ret = access(device,R_OK);
+                if (ret == 0){
+                    goto connect;
+                }
+        }
+
+
+        ALOGI("Sleeping 10s");
+        usleep(10000*1000);
+    }
+
+connect:
+
+
     do {
         state->fd = open( device, O_RDWR );
     } while (state->fd < 0 && errno == EINTR);

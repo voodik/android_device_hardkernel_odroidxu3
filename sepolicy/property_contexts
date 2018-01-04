@@ -5,3 +5,6 @@ persist.pwbtn.shutdown u:object_r:odroid_prop:s0
 persist.hdmi.audioforce u:object_r:odroid_prop:s0
 persist.hdmi.switch_tv_input u:object_r:odroid_prop:s0
 persist.adb.tcp.port u:object_r:odroid_prop:s0
+persist.no_wlan_ps u:object_r:odroid_prop:s0
+persist.demo.hdmirotation u:object_r:odroid_prop:s0
+persist.sf.hwrotation u:object_r:odroid_prop:s0
