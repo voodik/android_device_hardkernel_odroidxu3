@@ -12,3 +12,5 @@ allow platform_app self:process ptrace;
 allow platform_app sysfs_odroid:file write;
 
 set_prop(platform_app, powerctl_prop)
+
+allow platform_app exfat:dir rw_dir_perms;

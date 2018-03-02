@@ -10,6 +10,8 @@ allow system_server user_profile_data_file:file rename;
 allow system_server hdmi_cec_device:chr_file { ioctl open read write };
 allow system_server self:capability sys_module;
 
+allow system_server wifi_data_file:sock_file unlink;
+
 set_prop(system_server, odroid_prop)
 set_prop(system_server, config_prop)
 get_prop(system_server, odroid_prop)
