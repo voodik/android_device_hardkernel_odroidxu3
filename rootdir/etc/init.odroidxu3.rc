@@ -128,7 +128,6 @@ service insmod_ralink1 /system/bin/insmod /system/lib/modules/rt2x00lib.ko
     seclabel u:r:toolbox:s0
     user root
     group root
-    disabled
     oneshot
 
 service insmod_ralink2 /system/bin/insmod /system/lib/modules/rt2x00usb.ko
@@ -315,10 +314,6 @@ on property:init.svc.insmod_ax88179=stopped
 
 on property:init.svc.insmod_r8152=stopped
     start insmod_smsc95xx
-    start insmod_ralink1
-
-#on property:wlan.modname=rt2800usb
-#    start insmod_ralink1
 
 on property:init.svc.insmod_ralink1=stopped
     start insmod_ralink2
@@ -359,4 +354,3 @@ on property:init.svc.insmod_ftdi=stopped
 
 on property:ro.dumpstate.dmesg=1
     write /proc/sys/kernel/dmesg_restrict 0
-
