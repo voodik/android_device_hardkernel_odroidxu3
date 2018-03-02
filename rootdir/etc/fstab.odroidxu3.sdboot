@@ -14,7 +14,8 @@
 /devices/12200000.dwmmc0/mmc_host/mmc0*        /storage/sdcard1    auto    defaults                        voldmanaged=sdcard1:auto
 
 # USB storage
-/devices/12110000.usb*                       /storage/usb2host  auto    defaults        voldmanaged=usb:auto
-/devices/usb.1/12000000.dwc3/xhci-hcd*          /storage/usb3device     auto    defaults        voldmanaged=usb:auto
-/devices/usb.2/12400000.dwc3/xhci-hcd*          /storage/usb3host       auto    defaults        voldmanaged=usb:auto
+/devices/12110000.usb* auto  auto      defaults  voldmanaged=usbdisk:auto,encryptable=userdata
+/devices/12120000.usb* auto  auto      defaults  voldmanaged=usbdisk:auto,encryptable=userdata
+/devices/usb.1/12000000.dwc3/xhci-hcd* auto  auto      defaults  voldmanaged=usbdisk:auto,encryptable=userdata
+/devices/usb.2/12400000.dwc3/xhci-hcd* auto  auto      defaults  voldmanaged=usbdisk:auto,encryptable=userdata
 
