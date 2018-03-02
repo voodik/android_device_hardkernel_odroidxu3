@@ -108,6 +108,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/idc/Vendor_16b4_Product_0705.idc:system/usr/idc/Vendor_16b4_Product_0705.idc \
     $(LOCAL_PATH)/idc/Vendor_04d8_Product_0c03.idc:system/usr/idc/Vendor_04d8_Product_0c03.idc \
     $(LOCAL_PATH)/idc/Vendor_04DD_Product_9570.idc:system/usr/idc/Vendor_04DD_Product_9570.idc \
+    $(LOCAL_PATH)/idc/VNCINPUT.idc:system/usr/idc/VNCINPUT.idc \
     $(LOCAL_PATH)/keylayout/odroid-ts.kl:system/usr/keylayout/odroid-ts.kl \
     $(LOCAL_PATH)/keylayout/Vendor_054c_Product_05c4.kl:system/usr/keylayout/Vendor_054c_Product_05c4.kl \
     $(LOCAL_PATH)/keylayout/odroid-keypad.kl:system/usr/keylayout/odroid-keypad.kl
