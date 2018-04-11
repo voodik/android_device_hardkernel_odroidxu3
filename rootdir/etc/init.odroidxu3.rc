@@ -13,6 +13,7 @@ on early-init
     write /proc/irq/404/smp_affinity "f0"
 
 on init
+    start watchdogd
     mkdir /persist 0771 system system
 
 on fs
